@@ -156,7 +156,7 @@ describe('historical events', () => {
         for (const id of refs.countries) expect(COUNTRY_IDS.has(id), `${where} ${id}`).toBe(true);
         for (const id of refs.regions) expect(REGION_IDS.has(id), `${where} ${id}`).toBe(true);
         for (const id of refs.nodes) expect(NODE_IDS.has(id), `${where} ${id}`).toBe(true);
-        for (const value of refs.units) expect(unit(value), `${where} ${value}`).toBe(true);
+        for (const value of refs.units) expect(unit(value), `${where} ${String(value)}`).toBe(true);
         for (const weeks of refs.weeks) expect(weeks, where).toBeGreaterThan(0);
         if (effect.kind === 'announcement') expect(effect.topic, where).not.toBe('');
         if (effect.kind === 'tariff') expect(effect.rate, where).toBeGreaterThanOrEqual(0);
