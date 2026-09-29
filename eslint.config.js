@@ -1,4 +1,5 @@
 import js from '@eslint/js';
+import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 // Transcendental Math functions can differ between JS engines, so the simulation
@@ -47,6 +48,10 @@ export default tseslint.config(
   {
     files: ['**/*.js'],
     ...tseslint.configs.disableTypeChecked,
+  },
+  {
+    files: ['scripts/**/*.js', '*.config.js'],
+    languageOptions: { globals: globals.node },
   },
   // Logic layers never touch the browser and never import the view.
   {

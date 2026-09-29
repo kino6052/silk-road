@@ -15,11 +15,11 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "coverage": "vitest run --coverage",
-    "typecheck": "tsc --noEmit",
-    "lint": "eslint .",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "verify": "npm run format:check && npm run lint && npm run typecheck && npm run coverage && npm run build",
+    "typecheck": "tsc --noEmit --incremental --tsBuildInfoFile node_modules/.cache/tsbuildinfo",
+    "lint": "eslint --cache --cache-location node_modules/.cache/eslint/ .",
+    "format": "prettier --cache --write .",
+    "format:check": "prettier --cache --check .",
+    "verify": "node scripts/parallel.js format:check lint typecheck coverage && npm run build",
     "hooks": "git config core.hooksPath .githooks"
   },
   "devDependencies": {
