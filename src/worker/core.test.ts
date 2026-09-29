@@ -64,6 +64,10 @@ describe('worker core', () => {
       type: 'error',
       message: 'save.invalid',
     });
+    expect(other.handle({ type: 'load', text: '{broken' })).toEqual({
+      type: 'error',
+      message: 'save.invalid',
+    });
   });
 
   it('prefers a trucker near Khorgos for the cold open', () => {

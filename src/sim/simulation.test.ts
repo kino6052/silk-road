@@ -55,4 +55,14 @@ describe('simulation', () => {
     expect(simulation.twins.shadow.pendingNudges.length).toBeGreaterThan(0);
     expect(simulation.nudge('missing', 'accept')).toBe(false);
   });
+
+  it('primes every life before the first week: real wellbeing scores and first beliefs', () => {
+    const { twins } = createSimulation(content, { seed: 4, people: 60 });
+    for (const world of [twins.bri, twins.shadow]) {
+      const adults = world.people.filter((p) => p.role !== 'child' && p.role !== 'student');
+      expect(adults.every((p) => Object.keys(p.beliefs).length > 0)).toBe(true);
+      expect(adults.some((p) => p.wellbeing.health !== 0.5)).toBe(true);
+      expect(world.week).toBe(0);
+    }
+  });
 });
