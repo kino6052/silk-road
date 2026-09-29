@@ -27,7 +27,10 @@ describe('decisions system', () => {
     const world = run(52, boomTown);
     const offers = world.turningPoints.filter((tp) => tp.kind === 'job-offer');
     expect(offers.length).toBeGreaterThan(0);
-    expect(offers.every((tp) => world.people[tp.person]?.region === 'AAA-ONE')).toBe(true);
+    const regions = new Set(offers.map((tp) => world.people[tp.person]?.region));
+    expect(regions.has('AAA-ONE')).toBe(true);
+    // Only where the Belt and Road is building: the site, or AAA's other corridor region.
+    expect([...regions].every((r) => r === 'AAA-ONE' || r === 'AAA-TWO')).toBe(true);
     expect(
       run(52, boomTown, false).turningPoints.filter((tp) => tp.kind === 'job-offer'),
     ).toHaveLength(0);
@@ -45,6 +48,9 @@ describe('decisions system', () => {
     }
     const hired = decided.filter((tp) => tp.kind === 'job-offer' && tp.chosen === 'accept');
     for (const tp of hired) expect(world.people[tp.person]?.role).toBe('construction-worker');
+    const onSite = hired.filter((tp) => world.people[tp.person]?.region === 'AAA-ONE');
+    expect(onSite.length).toBeGreaterThan(0);
+    for (const tp of onSite) expect(world.people[tp.person]?.employer).toBe('rail-ab');
   });
 
   it('weighs a nudge, which people sometimes follow and sometimes refuse', () => {

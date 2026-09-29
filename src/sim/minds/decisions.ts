@@ -3,6 +3,7 @@ import type { Rng } from '../../core/rng';
 import type { Content } from '../../content/types';
 import type { System } from '../engine/engine';
 import { ageAt, bestRegionFor, isDue, record, relocate } from '../people/lifecycle';
+import { createPay, type Pay } from '../people/pay';
 import type { Person } from '../people/types';
 import type { World } from '../world/world';
 import { believed, topicId } from './topics';
@@ -165,6 +166,14 @@ function decide(situation: Situation, tp: TurningPoint, rng: Rng): void {
   tp.decidedWeek = situation.world.week;
 }
 
+/** Who is hiring for construction in a region: a flagship site, or the wider Belt and Road. */
+function employerIn(world: World, content: Content, region: string): string {
+  const site = content.projects.find(
+    (project) => project.region === region && world.projects[project.id]?.status === 'construction',
+  );
+  return site?.id ?? `bri:${required(world.regions[region], 'region state').country}`;
+}
+
 function consequences(world: World, content: Content, tp: TurningPoint, person: Person): void {
   const region = required(world.regions[person.region], 'region state');
   const household = required(world.households[person.household], 'household');
@@ -172,6 +181,7 @@ function consequences(world: World, content: Content, tp: TurningPoint, person: 
   switch (`${tp.kind}:${String(tp.chosen)}`) {
     case 'job-offer:accept':
       person.role = 'construction-worker';
+      person.employer = employerIn(world, content, person.region);
       record(person, world.week, 'job', person.role);
       return;
     case 'relocation:accept':
@@ -197,6 +207,7 @@ function consequences(world: World, content: Content, tp: TurningPoint, person: 
 function trigger(
   world: World,
   content: Content,
+  pay: Pay,
   person: Person,
   rng: Rng,
 ): TurningPointKind | null {
@@ -211,7 +222,11 @@ function trigger(
       project.region === person.region && world.projects[project.id]?.status === 'construction',
   );
   const struggling = person.role === 'unemployed' || person.wellbeing.income < 0.35;
-  if (building && struggling && age <= 55 && rng.chance(0.15)) return 'job-offer';
+  if (struggling && age <= 55) {
+    // Flagship sites hire most; the wider Belt and Road hires along the corridors.
+    const chance = building ? 0.15 : pay.briWorks(world, person.region) ? 0.08 : 0;
+    if (rng.chance(chance)) return 'job-offer';
+  }
   if ((person.role === 'customs-officer' || person.role === 'local-official') && rng.chance(0.05)) {
     return 'bribe';
   }
@@ -229,6 +244,7 @@ function trigger(
 /** Raises turning points in people's lives and resolves them after a short window. */
 export function createDecisionsSystem(content: Content): System {
   const countries = new Map(content.countries.map((c) => [c.id, c]));
+  const pay = createPay(content);
   const situationOf = (world: World, person: Person): Situation => {
     const country = required(
       countries.get(required(world.regions[person.region], 'region state').country),
@@ -267,7 +283,7 @@ export function createDecisionsSystem(content: Content): System {
       for (const person of world.people) {
         if (person.deathWeek !== null || open.has(person.id) || !isDue(person, world.week))
           continue;
-        const kind = trigger(world, content, person, ctx.rng(person.id, 'trigger'));
+        const kind = trigger(world, content, pay, person, ctx.rng(person.id, 'trigger'));
         if (!kind) continue;
         const raised = `decisions.raised.${kind}`;
         world.stats[raised] = (world.stats[raised] ?? 0) + 1;

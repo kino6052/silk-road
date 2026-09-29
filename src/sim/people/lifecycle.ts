@@ -12,6 +12,7 @@ import {
   randomTraits,
   regionFeatures,
 } from './generate';
+import { createPay } from './pay';
 import { NON_WORKING, ROLE_INCOME, personalFactor, sampleWorkRole } from './roles';
 import type { LifeEvent, LifeEventKind, Person } from './types';
 
@@ -86,6 +87,7 @@ export function createLifecycleSystem(content: Content): System {
   const features = regionFeatures(content);
   const regions = new Map(content.regions.map((region) => [region.id, region]));
   const cultures = new Map(content.cultures.map((culture) => [culture.id, culture]));
+  const pay = createPay(content);
 
   const die = (world: World, person: Person) => {
     person.deathWeek = world.week;
@@ -161,7 +163,13 @@ export function createLifecycleSystem(content: Content): System {
         person.role = 'unemployed';
       }
     }
-    person.income = state.income * ROLE_INCOME[person.role] * personalFactor(person.genes);
+    // An employer only counts while the person still does construction work.
+    if (person.role !== 'construction-worker' && person.role !== 'engineer') person.employer = null;
+    person.income =
+      state.income *
+      ROLE_INCOME[person.role] *
+      personalFactor(person.genes) *
+      pay.factor(world, person);
   };
 
   const marry = (
@@ -249,6 +257,7 @@ export function createLifecycleSystem(content: Content): System {
   return {
     id: 'lifecycle',
     step: (world, ctx) => {
+      pay.track(world);
       displace(world, (entity, purpose) => ctx.rng(entity, purpose));
       const singles = new Map<string, Person[]>();
       for (const person of world.people) {

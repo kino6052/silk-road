@@ -232,7 +232,6 @@ export function generatePopulation(content: Content, seed: number, target: numbe
           log: [],
           beliefs: {},
           employer: null,
-          employer: null,
         };
         people.push(person);
         regionPeople.push(person);

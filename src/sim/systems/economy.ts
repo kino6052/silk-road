@@ -1,5 +1,6 @@
 import { civilFromDays, daysFromCivil, type CivilDate } from '../../core/calendar';
 import { pow } from '../../core/fixed-math';
+import { required } from '../../core/required';
 import type { BriEnvelope, Content, IndicatorYear, Project } from '../../content/types';
 import { capitalBn, reliability, spendingBn } from './bri';
 import type { System } from '../engine/engine';
@@ -314,7 +315,7 @@ export function createEconomySystem(content: Content): System {
         // The deviation is recovered from last week's GDP, so it needs no extra state.
         const deviation = ctx.week === 0 ? 0 : state.gdp / previous - 1;
         // History already contains sanctions, shocks and debt crises: drags apply after it.
-        const historyEnds = model.gdp.points[model.gdp.points.length - 1]?.day ?? today;
+        const historyEnds = required(model.gdp.points.at(-1), 'GDP history').day;
         const drag = today > historyEnds ? growthDrag(state, world, ctx.week) : 0;
         const next =
           deviation + ((1 + deviation) * drag - ANCHOR_PULL * deviation) / WEEKS_PER_YEAR;
