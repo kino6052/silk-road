@@ -52,5 +52,5 @@ export const COUNTRIES: readonly Country[] = [
   country('JPN', 'external', 'democracy', 0.75, 0.26, ['G7'], [13, 3000, 0.007]),
   country('SAU', 'external', 'monarchy', 0.1, 0.54, ['GCC'], [88, 150, 0.03]),
   country('ARE', 'external', 'monarchy', 0.3, 0.31, ['GCC'], [42, 180, 0.035]),
-  country('GBR', 'external', 'democracy', 0.8, 0.24, ['NATO', 'G7'], [11, 9500, 0.014]),
+  country('GBR', 'external', 'democracy', 0.8, 0.24, ['EU', 'NATO', 'G7'], [11, 9500, 0.014]),
 ];
