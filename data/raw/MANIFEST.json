@@ -10,6 +10,16 @@
       "trim": "Rows: the 13 corridor countries, 6 external countries (ISO3) and 'European Union (27)'; years 2000-2024. Columns: country, year, iso_code, population, gdp, co2, co2_per_capita, coal_co2.",
       "notes": "gdp is OWID's Maddison-based series in international-$ (2011 prices).",
       "sha256": "9935f97b335fddc7d25fe233bc53b7cbc43907201c4947b04071b3c8db509572"
+    },
+    {
+      "file": "ne-110m-countries-trimmed.geojson",
+      "title": "Natural Earth 1:110m Admin 0 \u2013 Countries (trimmed)",
+      "url": "https://www.naturalearthdata.com/downloads/110m-cultural-vectors/",
+      "downloadUrl": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_countries.geojson",
+      "license": "Public domain (Natural Earth)",
+      "retrieved": "2026-09-29",
+      "trim": "Countries whose bounding box meets lon -20..130, lat -38..62; properties reduced to code (ADM0_A3); all geometries as MultiPolygon; coordinates rounded to 0.001 degrees.",
+      "sha256": "62ea90f6a3a5e4d780e6d6bcf792fae463de9f6062222456dda90472dca4718b"
     }
   ]
 }
