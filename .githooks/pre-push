@@ -1,0 +1,3 @@
+#!/bin/sh
+# Red commits may fail tests on purpose; only the pushed tip must be green.
+exec npm run verify

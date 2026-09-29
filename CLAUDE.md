@@ -7,7 +7,7 @@ Read `docs/DESIGN.md` (what we build and why) and `docs/ROADMAP.md` (the order w
 For every behaviour:
 
 1. 🔴 **Red.** Write one failing test for the next small behaviour. Run it and confirm it
-   fails *for the expected reason* (not a typo or import error). Commit:
+   fails _for the expected reason_ (not a typo or import error). Commit:
    `test(red): <area> — <behaviour>`
 2. 🟢 **Green.** Write the minimum code that makes the test pass, with all other tests
    still green. Commit: `feat(green): <area> — <behaviour>` (or `fix(green): …`).

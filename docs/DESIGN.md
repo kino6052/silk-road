@@ -7,7 +7,7 @@ levels share one world clock:
 - **Macro** — a pixel map with overlays, statistics and charts, running fast-forward.
 - **Micro** — one person's life in a side-view pixel vignette, with their mind readable.
 
-The goal is to let the player *feel* who benefits and who does not: where life gets
+The goal is to let the player _feel_ who benefits and who does not: where life gets
 better, where it gets worse, and how politics, globalisation, consumerism, inequality,
 pollution and sanctions shape that. There is no win or lose state.
 
@@ -15,44 +15,44 @@ pollution and sanctions shape that. There is no win or lose state.
 
 ## 1. Decisions
 
-| Area | Decision |
-|---|---|
-| Player | An observer who can step into any person. No win/lose. |
-| Genre | Explorable simulation, like an interactive documentary or "SimCity as a lens". |
-| Map | Land corridors plus maritime routes. |
-| Time | Starts 2013-09 (the Astana speech). Open-ended run; 2050 is a milestone, not an end. |
-| Realism | Real places with modelled numbers. Anchored historical timeline plus calibration up to today; free simulation afterwards. |
-| Future | Scenario presets (Baseline, BRI scales back, Green BRI, Debt-crisis wave, Blocs harden, Climate stress) plus a weighted random event deck. |
-| Countries | **13 corridor countries:** China, Kazakhstan, Uzbekistan, Russia, Belarus, Poland, Germany, Azerbaijan, Turkey, Iran, Pakistan, Egypt, Greece. **7 external powers:** United States, European Union (as a policy bloc), India, Japan, Saudi Arabia, UAE, United Kingdom. |
-| Regions | Key regions only (2–6 per corridor country, about 45 in total) plus a "rest of country" region. |
-| Population | Region aggregates plus about 2,000 fully simulated sample people per world. |
-| Speed | Weekly macro step; top speed ≈ 1 sim-year per 5 s with two worlds running. |
-| Counterfactual | A shadow "no-BRI" world runs in lockstep from v0.1. Nudges are mirrored into it where possible. |
-| People | All roles: transport workers, affected locals, builders and business, officials and finance. Families and generations. Identity is driven by demographics. |
-| Minds | Procedural belief model plus an information ecosystem. The mind view shows first-person thoughts and a belief panel ("believes" vs "actually true"). |
-| Wellbeing | Six dimensions: income/wealth, health, security, freedom/voice, belonging, outlook. |
-| Micro play | Observe. At real turning points you can *nudge*, and the person may refuse. Nudges are unlimited but only happen at turning points. |
-| Micro time | One clock, two zooms: macro in weeks, micro in hours. The focused person gets an hourly routine driven by needs and a cultural calendar. |
-| Actors | All 20 states act through a shared policy engine. Key organisations (banks, state firms, contractors, unions, NGOs) are light actors with their own mind view. |
-| Themes | Product chains with a "trace this product" view; consumer aspirations and household debt; class and inequality; ethical dilemmas and complicity. |
-| Change | Technology and economy shifts, culture and values drift, a living map, an open-ended run. |
-| Environment | Pollution, land use and climate trend with disasters. |
-| Sensitive topics | Simulated from several viewpoints, never graphic. Real leaders appear as offices, not names (names appear only in factual almanac and event text). |
-| Tone | Honest, humane and mixed. The simulation decides whether a story is hopeful or grim; the game never tells the player what to conclude. |
-| Discovery | A story feed that balances winners and losers, plus free browsing and filters. |
-| Reports | A yearly digest plus a final "Many Lives" report available at any time. |
-| Rewind | Yearly snapshots. Resuming from the past creates a branch. |
-| Sourcing | Almanac plus provenance badges on every value: `historical`, `estimated` or `simulated`. |
-| Data | Trimmed raw datasets are committed with a manifest, then processed by a TDD-tested TypeScript pipeline into generated content. |
-| Art | Macro: pixel map with overlays. Micro: side-view vignettes at 480×270, scaled up crisply, with a muted 32–48 colour palette. **v0.1 uses a functional debug view.** |
-| Tech | TypeScript (strict), Canvas 2D, DOM panels, Vite. The sim runs in a Web Worker. |
-| Platform | Desktop first; the layout stays flexible for mobile later. |
-| Language | English only, but all text goes through the i18n layer from day one. |
-| Audio | Procedural WebAudio in a later phase. |
-| Saves | IndexedDB slots, file export/import, and shareable seeds. |
-| Hosting | GitHub Pages, deployed by GitHub Actions. |
-| License | MIT for code; CC BY 4.0 for curated data and almanac text (raw datasets keep their own licenses). |
-| Process | Strict red/green/blue TDD with one commit per phase and 100% coverage of logic. See `CLAUDE.md`. |
+| Area             | Decision                                                                                                                                                                                                                                                                 |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Player           | An observer who can step into any person. No win/lose.                                                                                                                                                                                                                   |
+| Genre            | Explorable simulation, like an interactive documentary or "SimCity as a lens".                                                                                                                                                                                           |
+| Map              | Land corridors plus maritime routes.                                                                                                                                                                                                                                     |
+| Time             | Starts 2013-09 (the Astana speech). Open-ended run; 2050 is a milestone, not an end.                                                                                                                                                                                     |
+| Realism          | Real places with modelled numbers. Anchored historical timeline plus calibration up to today; free simulation afterwards.                                                                                                                                                |
+| Future           | Scenario presets (Baseline, BRI scales back, Green BRI, Debt-crisis wave, Blocs harden, Climate stress) plus a weighted random event deck.                                                                                                                               |
+| Countries        | **13 corridor countries:** China, Kazakhstan, Uzbekistan, Russia, Belarus, Poland, Germany, Azerbaijan, Turkey, Iran, Pakistan, Egypt, Greece. **7 external powers:** United States, European Union (as a policy bloc), India, Japan, Saudi Arabia, UAE, United Kingdom. |
+| Regions          | Key regions only (2–6 per corridor country, about 45 in total) plus a "rest of country" region.                                                                                                                                                                          |
+| Population       | Region aggregates plus about 2,000 fully simulated sample people per world.                                                                                                                                                                                              |
+| Speed            | Weekly macro step; top speed ≈ 1 sim-year per 5 s with two worlds running.                                                                                                                                                                                               |
+| Counterfactual   | A shadow "no-BRI" world runs in lockstep from v0.1. Nudges are mirrored into it where possible.                                                                                                                                                                          |
+| People           | All roles: transport workers, affected locals, builders and business, officials and finance. Families and generations. Identity is driven by demographics.                                                                                                               |
+| Minds            | Procedural belief model plus an information ecosystem. The mind view shows first-person thoughts and a belief panel ("believes" vs "actually true").                                                                                                                     |
+| Wellbeing        | Six dimensions: income/wealth, health, security, freedom/voice, belonging, outlook.                                                                                                                                                                                      |
+| Micro play       | Observe. At real turning points you can _nudge_, and the person may refuse. Nudges are unlimited but only happen at turning points.                                                                                                                                      |
+| Micro time       | One clock, two zooms: macro in weeks, micro in hours. The focused person gets an hourly routine driven by needs and a cultural calendar.                                                                                                                                 |
+| Actors           | All 20 states act through a shared policy engine. Key organisations (banks, state firms, contractors, unions, NGOs) are light actors with their own mind view.                                                                                                           |
+| Themes           | Product chains with a "trace this product" view; consumer aspirations and household debt; class and inequality; ethical dilemmas and complicity.                                                                                                                         |
+| Change           | Technology and economy shifts, culture and values drift, a living map, an open-ended run.                                                                                                                                                                                |
+| Environment      | Pollution, land use and climate trend with disasters.                                                                                                                                                                                                                    |
+| Sensitive topics | Simulated from several viewpoints, never graphic. Real leaders appear as offices, not names (names appear only in factual almanac and event text).                                                                                                                       |
+| Tone             | Honest, humane and mixed. The simulation decides whether a story is hopeful or grim; the game never tells the player what to conclude.                                                                                                                                   |
+| Discovery        | A story feed that balances winners and losers, plus free browsing and filters.                                                                                                                                                                                           |
+| Reports          | A yearly digest plus a final "Many Lives" report available at any time.                                                                                                                                                                                                  |
+| Rewind           | Yearly snapshots. Resuming from the past creates a branch.                                                                                                                                                                                                               |
+| Sourcing         | Almanac plus provenance badges on every value: `historical`, `estimated` or `simulated`.                                                                                                                                                                                 |
+| Data             | Trimmed raw datasets are committed with a manifest, then processed by a TDD-tested TypeScript pipeline into generated content.                                                                                                                                           |
+| Art              | Macro: pixel map with overlays. Micro: side-view vignettes at 480×270, scaled up crisply, with a muted 32–48 colour palette. **v0.1 uses a functional debug view.**                                                                                                      |
+| Tech             | TypeScript (strict), Canvas 2D, DOM panels, Vite. The sim runs in a Web Worker.                                                                                                                                                                                          |
+| Platform         | Desktop first; the layout stays flexible for mobile later.                                                                                                                                                                                                               |
+| Language         | English only, but all text goes through the i18n layer from day one.                                                                                                                                                                                                     |
+| Audio            | Procedural WebAudio in a later phase.                                                                                                                                                                                                                                    |
+| Saves            | IndexedDB slots, file export/import, and shareable seeds.                                                                                                                                                                                                                |
+| Hosting          | GitHub Pages, deployed by GitHub Actions.                                                                                                                                                                                                                                |
+| License          | MIT for code; CC BY 4.0 for curated data and almanac text (raw datasets keep their own licenses).                                                                                                                                                                        |
+| Process          | Strict red/green/blue TDD with one commit per phase and 100% coverage of logic. See `CLAUDE.md`.                                                                                                                                                                         |
 
 **Open question:** the "media lens" (a panel showing how different outlets frame the
 same event) is undecided. The information ecosystem models media either way; only that
@@ -129,7 +129,7 @@ Unit tests sit next to their code as `*.test.ts`. Property tests use `*.prop.tes
   hourly sub-steps for the focused person only, then reconciles into the weekly
   aggregates.
 - **Determinism:**
-  - Randomness comes from a *counter-based* RNG keyed by `(seed, stream, entityId, tick)`.
+  - Randomness comes from a _counter-based_ RNG keyed by `(seed, stream, entityId, tick)`.
     Because of this, removing BRI projects in the shadow world does not shift anyone
     else's random draws. Twins stay comparable.
   - There is no `Math.random`, no `Date`, and no engine-dependent transcendental `Math.*`
@@ -146,21 +146,21 @@ Unit tests sit next to their code as `*.test.ts`. Property tests use `*.prop.tes
 
 ### 2.4 Systems (v0.1 thin versions)
 
-| System | v0.1 behaviour |
-|---|---|
-| Timeline | Applies dated historical events (e.g. COVID-19, sanctions on Russia from 2022, the Red Sea shipping crisis, Italy's BRI exit) as effect bundles. |
-| Scenarios / event deck | After today's date, the chosen preset sets trend modifiers and draws weighted plausible events. |
-| Projects | Lifecycle: planned → financed → construction → operating, stalled or cancelled. Each stage produces jobs, land take, displacement, emissions and travel-time changes. |
-| Trade & logistics | Route graph of rail, road and sea with border and port nodes. Freight comes from a gravity model with lowest-cost route choice, so sanctions and war reroute flows (for example, the Middle Corridor shift). |
-| Finance & debt | Loans (lender, rate, grace period, term). Debt service against revenue; distress then leads to renegotiation, an IMF programme, default or an asset lease. |
-| Labour & migration | Jobs by sector per region, wages, and migration driven by wage and wellbeing gaps. |
-| Environment | Air-pollution index per region from projects and industry, affecting health. (Land and climate come later.) |
-| Information | Source types (state media, local press, independent/foreign media, social media, word of mouth, employer, own eyes), each with reach, delay and distortion per country, language and literacy. |
-| Beliefs | Per person: fact → `{value, confidence, source, since}`, plus fears, hopes and goals. The gap from the truth is computed. |
-| Wellbeing | Six dimensions per person, derived from person and region state. |
-| Lifecycle | Ageing, birth, death, marriage, job change, moving house. Children inherit circumstances. |
-| Turning points | Situations (relocation offer, job offer, protest, emigration, bribe) produce decisions. Options are scored by *believed* outcomes plus personality plus the nudge bias; the explanation lists the top factors. |
-| Stories | Detectors pick up notable changes. The feed is balanced across winners and losers and across countries. |
+| System                 | v0.1 behaviour                                                                                                                                                                                                 |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Timeline               | Applies dated historical events (e.g. COVID-19, sanctions on Russia from 2022, the Red Sea shipping crisis, Italy's BRI exit) as effect bundles.                                                               |
+| Scenarios / event deck | After today's date, the chosen preset sets trend modifiers and draws weighted plausible events.                                                                                                                |
+| Projects               | Lifecycle: planned → financed → construction → operating, stalled or cancelled. Each stage produces jobs, land take, displacement, emissions and travel-time changes.                                          |
+| Trade & logistics      | Route graph of rail, road and sea with border and port nodes. Freight comes from a gravity model with lowest-cost route choice, so sanctions and war reroute flows (for example, the Middle Corridor shift).   |
+| Finance & debt         | Loans (lender, rate, grace period, term). Debt service against revenue; distress then leads to renegotiation, an IMF programme, default or an asset lease.                                                     |
+| Labour & migration     | Jobs by sector per region, wages, and migration driven by wage and wellbeing gaps.                                                                                                                             |
+| Environment            | Air-pollution index per region from projects and industry, affecting health. (Land and climate come later.)                                                                                                    |
+| Information            | Source types (state media, local press, independent/foreign media, social media, word of mouth, employer, own eyes), each with reach, delay and distortion per country, language and literacy.                 |
+| Beliefs                | Per person: fact → `{value, confidence, source, since}`, plus fears, hopes and goals. The gap from the truth is computed.                                                                                      |
+| Wellbeing              | Six dimensions per person, derived from person and region state.                                                                                                                                               |
+| Lifecycle              | Ageing, birth, death, marriage, job change, moving house. Children inherit circumstances.                                                                                                                      |
+| Turning points         | Situations (relocation offer, job offer, protest, emigration, bribe) produce decisions. Options are scored by _believed_ outcomes plus personality plus the nudge bias; the explanation lists the top factors. |
+| Stories                | Detectors pick up notable changes. The feed is balanced across winners and losers and across countries.                                                                                                        |
 
 ### 2.5 View-models and generators (logic, tested)
 
@@ -178,6 +178,7 @@ file. `pipeline/` (TypeScript, TDD, 100% coverage) validates the manifest and pa
 and transforms the files into `src/content/generated/*.json`, which is committed.
 
 Candidate sources, each with its license to be verified before bundling:
+
 - World Bank WDI: GDP, population, Gini, external debt, PM2.5.
 - AidData's Global Chinese Development Finance dataset.
 - Boston University Global China databases.
@@ -191,10 +192,10 @@ summary of the facts instead.
 
 ### 2.7 Testing
 
-| Kind | Purpose |
-|---|---|
-| Unit | Every function in the logic layers. 100% lines, branches, functions and statements. |
-| Property (`fast-check`) | Invariants for any seed: conservation of money and people, bounded beliefs and wellbeing, lossless save/load, twin alignment. |
-| Determinism | A fixed seed run for N years gives a golden `stateHash`. Same result on every run, in CI and in browsers. |
-| Data validation | Schemas, referential integrity, valid dates, every historical value has a source, every i18n key exists. |
-| History calibration | The run from 2013 reproduces real trends within tolerances, e.g. growth in China–Europe rail trips to 2021, the post-2022 drop in transit through Russia, Pakistan's debt stress in 2022–23, and Red Sea diversion from Suez in 2024. |
+| Kind                    | Purpose                                                                                                                                                                                                                               |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Unit                    | Every function in the logic layers. 100% lines, branches, functions and statements.                                                                                                                                                   |
+| Property (`fast-check`) | Invariants for any seed: conservation of money and people, bounded beliefs and wellbeing, lossless save/load, twin alignment.                                                                                                         |
+| Determinism             | A fixed seed run for N years gives a golden `stateHash`. Same result on every run, in CI and in browsers.                                                                                                                             |
+| Data validation         | Schemas, referential integrity, valid dates, every historical value has a source, every i18n key exists.                                                                                                                              |
+| History calibration     | The run from 2013 reproduces real trends within tolerances, e.g. growth in China–Europe rail trips to 2021, the post-2022 drop in transit through Russia, Pakistan's debt stress in 2022–23, and Red Sea diversion from Suez in 2024. |
