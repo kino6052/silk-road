@@ -9,6 +9,7 @@ export interface RngKey {
 
 export interface Rng {
   next(): number;
+  float(): number;
 }
 
 export function createRng(key: RngKey): Rng {
@@ -16,5 +17,8 @@ export function createRng(key: RngKey): Rng {
   let counter = 0;
   return {
     next: () => hashWords([...base, counter++]),
+    float: () => {
+      throw new Error('not implemented');
+    },
   };
 }

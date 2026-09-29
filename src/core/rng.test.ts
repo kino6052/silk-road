@@ -44,4 +44,25 @@ describe('createRng', () => {
       }),
     );
   });
+
+  it('draws floats in [0, 1)', () => {
+    fc.assert(
+      fc.property(keyArb, (key) => {
+        const rng = createRng(key);
+        for (let i = 0; i < 16; i++) {
+          const value = rng.float();
+          expect(value).toBeGreaterThanOrEqual(0);
+          expect(value).toBeLessThan(1);
+        }
+      }),
+    );
+  });
+
+  it('draws floats with a uniform mean', () => {
+    const rng = createRng({ seed: 42, stream: 'uniformity', entity: 0, tick: 0 });
+    let sum = 0;
+    const draws = 20_000;
+    for (let i = 0; i < draws; i++) sum += rng.float();
+    expect(sum / draws).toBeCloseTo(0.5, 2);
+  });
 });
