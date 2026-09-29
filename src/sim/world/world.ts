@@ -1,6 +1,8 @@
 import { canonicalJson } from '../../core/canonical-json';
 import { hashString } from '../../core/hash';
 import type { Content, Country, Region } from '../../content/types';
+import { generatePopulation, PEOPLE_PER_WORLD } from '../people/generate';
+import type { Household, Person } from '../people/types';
 import type {
   ActiveEffect,
   CountryState,
@@ -32,6 +34,9 @@ export interface World {
    * 'trade.rail.teu' or 'labour.foreignWorkers.PAK-BAL'. Systems overwrite their own keys.
    */
   stats: Record<string, number>;
+  /** Sample people, indexed by id; the dead stay for history. */
+  people: Person[];
+  households: Household[];
 }
 
 export interface WorldOptions {
@@ -99,7 +104,7 @@ function regionState(
   };
 }
 
-export function createWorld(content: Content, { seed, bri }: WorldOptions): World {
+export function createWorld(content: Content, { seed, bri, people }: WorldOptions): World {
   const countries = byId(content.countries.map((country) => countryState(country, content)));
   const pm25 = Object.fromEntries(content.countries.map((c) => [c.id, c.pm25]));
   return {
@@ -120,6 +125,7 @@ export function createWorld(content: Content, { seed, bri }: WorldOptions): Worl
     effects: [],
     firedEvents: [],
     stats: {},
+    ...generatePopulation(content, seed, people ?? PEOPLE_PER_WORLD),
   };
 }
 

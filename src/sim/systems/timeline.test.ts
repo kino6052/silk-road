@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-import { dateToWeek } from '../../core/calendar';
 import type { EventEffect, HistoricalEvent } from '../../content/types';
 import { createPipeline, stepWorld } from '../engine/engine';
 import { fixtureContent } from '../testing/content.fixture';
