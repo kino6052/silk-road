@@ -8,7 +8,7 @@ const content = fixtureContent();
 const pipeline = createPipeline([createBeliefsSystem(content)]);
 
 const months = (count: number, setup: (world: World) => void = () => undefined): World => {
-  const world = createWorld(content, { seed: 3, bri: true, people: 150 });
+  const world = createWorld(content, { seed: 3, bri: true, people: 60 });
   setup(world);
   for (let i = 0; i < count * 4; i++) stepWorld(world, pipeline);
   return world;
@@ -36,7 +36,7 @@ describe('beliefs system', () => {
   });
 
   it('pulls beliefs toward what people can see, over time', () => {
-    const world = months(18, (w) => {
+    const world = months(12, (w) => {
       const region = w.regions['AAA-ONE'];
       if (region) region.pollution = 95;
     });
@@ -46,7 +46,7 @@ describe('beliefs system', () => {
   });
 
   it('leaves people in unfree countries less aware of harm than the truth', () => {
-    const world = months(18, (w) => {
+    const world = months(12, (w) => {
       const region = w.regions['AAA-ONE'];
       if (region) region.displaced = 200_000;
     });

@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import mapJson from '../content/generated/map.json';
 import { CONTENT } from '../content';
-import { decodeMap, project, regionGrid, terrain, type MapData } from './map';
+import { decodeMap, project, regionGrid, terrain } from './map';
 import { PALETTE } from './palette';
 
-const grid = decodeMap(mapJson as MapData);
+const grid = decodeMap(mapJson);
 const regions = regionGrid(grid, CONTENT);
 const tiles = terrain(grid, regions, CONTENT);
 const cellAt = (lon: number, lat: number) => {
@@ -18,7 +18,7 @@ describe('map generation', () => {
     expect([grid.width, grid.height]).toEqual([480, 320]);
     expect(codeAt(116.4, 39.9)).toBe('CHN');
     expect(codeAt(76.9, 43.24)).toBe('KAZ');
-    expect(codeAt(23.7, 37.9)).toBe('GRC');
+    expect(codeAt(22.4, 39.6)).toBe('GRC');
     expect(codeAt(65, 15)).toBe('');
   });
 
@@ -44,5 +44,22 @@ describe('map generation', () => {
     expect(used.size).toBeGreaterThan(8);
     expect(tiles[cellAt(65, 15)]).not.toBe(tiles[cellAt(2.35, 48.85)]);
     expect(tiles[cellAt(116.4, 39.9)]).not.toBe(tiles[cellAt(2.35, 48.85)]);
+  });
+
+  it('handles grid edges and regions without content', () => {
+    // A 3×2 grid: sea, AAA, AAA / BBB, AAA, AAA — land reaches the last row and column.
+    const tiny = {
+      west: 0,
+      north: 2,
+      step: 1,
+      width: 3,
+      height: 2,
+      codes: ['', 'AAA', 'BBB'],
+      cells: new Uint8Array([0, 1, 1, 2, 1, 1]),
+    };
+    const painted = terrain(tiny, new Int16Array([-1, 0, 1, -1, 5000, 5000]), CONTENT);
+    expect(painted[3]).toBe(9);
+    expect(painted[5]).toBe(4);
+    expect(painted[1]).toBe(10);
   });
 });

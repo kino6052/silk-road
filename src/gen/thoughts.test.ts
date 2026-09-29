@@ -71,11 +71,41 @@ describe('thoughts', () => {
     };
     const keys = thoughtsOf(busy, world, content).map((t) => t.key);
     expect(keys).toEqual(['thought.child-born', 'thought.job', 'thought.debt.worried']);
-    const hopeful = {
-      ...busy,
-      log: [],
-      beliefs: { ['jobs:' + person.region]: busy.beliefs['jobs:' + person.region] },
-    };
+    const jobs = { value: 0.8, confidence: 0.9, source: 'word-of-mouth' as const, since: 0 };
+    const hopeful = { ...busy, log: [], beliefs: { ['jobs:' + person.region]: jobs } };
     expect(thoughtsOf(hopeful, world, content)[0]?.key).toBe('thought.jobs.appearing');
+  });
+
+  it('has a thought for each strong belief, and ignores weak beliefs and old or minor events', () => {
+    const country = world.regions[person.region]?.country ?? '';
+    const single = (topic: string, value: number) =>
+      thoughtsOf(
+        {
+          ...person,
+          id: -1,
+          log: [],
+          beliefs: { [topic]: { value, confidence: 1, source: 'own-eyes', since: 0 } },
+        },
+        world,
+        content,
+      )[0]?.key;
+    expect(single('land:' + person.region, 0.9)).toBe('thought.land.taken');
+    expect(single('danger:' + person.region, 0.9)).toBe('thought.danger');
+    expect(single('china:' + person.region, 0.9)).toBe('thought.china.hopeful');
+    expect(single('china:' + person.region, 0.1)).toBe('thought.china.wary');
+    expect(single('economy:' + country, 0.1)).toBe('thought.economy.bad');
+    expect(single('sanctions:' + country, 0.9)).toBe('thought.sanctions');
+    expect(single('pollution:' + person.region, 0.5)).toBe('thought.ordinary.' + person.role);
+    const quiet = {
+      ...person,
+      id: -1,
+      region: 'NOWHERE',
+      beliefs: {},
+      log: [
+        { week: -500, kind: 'married' as const, detail: '1' },
+        { week: 0, kind: 'decided' as const, detail: 'x' },
+      ],
+    };
+    expect(thoughtsOf(quiet, world, content)[0]?.key).toBe('thought.ordinary.' + person.role);
   });
 });

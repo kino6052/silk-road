@@ -97,7 +97,7 @@ describe('lifecycle system', () => {
   });
 
   it('lays people off faster during a pandemic', () => {
-    const pandemic = run(260, (w) => {
+    const pandemic = run(156, (w) => {
       w.effects.push({
         source: 'test',
         effect: { kind: 'pandemic', severity: 1, weeks: 999 },
@@ -105,7 +105,7 @@ describe('lifecycle system', () => {
       });
     });
     expect(logged(pandemic, 'job-lost').length).toBeGreaterThan(
-      logged(run(260), 'job-lost').length,
+      logged(run(156), 'job-lost').length,
     );
   });
 

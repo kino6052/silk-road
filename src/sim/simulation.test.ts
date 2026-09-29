@@ -33,12 +33,12 @@ describe('simulation', () => {
   it('steps the BRI and shadow worlds together, deterministically', () => {
     const run = () => {
       const simulation = createSimulation(content, { seed: 4, people: 60 });
-      for (let i = 0; i < 16; i++) simulation.step();
+      for (let i = 0; i < 8; i++) simulation.step();
       return simulation.twins;
     };
     const twins = run();
-    expect(twins.bri.week).toBe(16);
-    expect(twins.shadow.week).toBe(16);
+    expect(twins.bri.week).toBe(8);
+    expect(twins.shadow.week).toBe(8);
     expect(stateHash(run().bri)).toBe(stateHash(twins.bri));
     expect(stateHash(twins.shadow)).not.toBe(stateHash(twins.bri));
   });

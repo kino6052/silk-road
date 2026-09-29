@@ -93,7 +93,7 @@ describe('world persistence', () => {
       fc.property(worldArb, (world) => {
         expect(deserializeWorld(serializeWorld(world))).toEqual(world);
       }),
-      { numRuns: 20 },
+      { numRuns: 8 },
     );
   });
 

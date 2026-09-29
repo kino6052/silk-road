@@ -14,7 +14,7 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "coverage": "vitest run --coverage",
+    "coverage": "TEST_BUDGET_MS=3000 vitest run --coverage",
     "typecheck": "tsc --noEmit --incremental --tsBuildInfoFile node_modules/.cache/tsbuildinfo",
     "lint": "eslint --cache --cache-location node_modules/.cache/eslint/ .",
     "format": "prettier --cache --write .",

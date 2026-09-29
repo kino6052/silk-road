@@ -50,4 +50,20 @@ describe('daily routine', () => {
       'orthodox-easter',
     );
   });
+
+  it('covers weekends, prayer times, homemakers and years beyond the table', () => {
+    expect(activityAt('farmer', hour(MONDAY, 16), true, null)).toBe('praying');
+    expect(activityAt('farmer', hour(MONDAY, 19), true, null)).toBe('praying');
+    expect(activityAt('student', hour(SATURDAY + 24, 10), false, null)).toBe('family');
+    expect(activityAt('homemaker', hour(MONDAY, 10), false, null)).toBe('family');
+    expect(activityAt('farmer', hour(SATURDAY + 24, 10), false, null)).toBe('family');
+    expect(activityAt('farmer', hour(MONDAY, 6), false, null)).toBe('family');
+    // 2039 and 2001 fold onto 2020 (Chinese New Year on 25 January, festival week follows).
+    expect(festivalOn({ year: 2039, month: 1, day: 26 }, ['spring-festival'])).toBe(
+      'spring-festival',
+    );
+    expect(festivalOn({ year: 2001, month: 1, day: 26 }, ['spring-festival'])).toBe(
+      'spring-festival',
+    );
+  });
 });

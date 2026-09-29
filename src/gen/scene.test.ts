@@ -47,4 +47,12 @@ describe('vignette scenes', () => {
     expect(count(sceneOf({ ...base, role: 'farmer' }).pixels, SCENE.field)).toBeGreaterThan(0);
     expect(count(sceneOf({ ...base, climate: 'arid' }).pixels, SCENE.sand)).toBeGreaterThan(0);
   });
+
+  it('draws highland hills, railway tracks and market stalls', () => {
+    expect(count(sceneOf({ ...base, climate: 'highland' }).pixels, 12)).toBeGreaterThan(0);
+    expect(count(sceneOf({ ...base, role: 'rail-worker' }).pixels, SCENE.rail)).toBeGreaterThan(0);
+    expect(count(sceneOf({ ...base, role: 'market-trader' }).pixels, SCENE.stall)).toBeGreaterThan(
+      0,
+    );
+  });
 });

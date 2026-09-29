@@ -35,11 +35,27 @@ describe('sprites', () => {
     expect(spriteOf({ ...adult, role: 'construction-worker' }, 35, 'folk-none').pixels).toContain(
       SPRITE.hardHat,
     );
-    expect(spriteOf({ ...adult, sex: 'm' }, 70, 'folk-none').pixels).toContain(SPRITE.grey);
+    expect(spriteOf({ ...adult, sex: 'm', role: 'farmer' }, 70, 'folk-none').pixels).toContain(
+      SPRITE.grey,
+    );
     const covered = people
       .filter((p) => p.sex === 'f' && p.role !== 'child')
       .some((p) => spriteOf(p, 30, 'sunni').pixels.includes(SPRITE.scarf));
     expect(covered).toBe(true);
     expect(spriteOf({ ...adult, sex: 'f' }, 30, 'folk-none').pixels).not.toContain(SPRITE.scarf);
+  });
+
+  it('varies skin, build and headwear by culture and genes', () => {
+    const skin = (culture: string, genes: number) =>
+      spriteOf({ ...adult, culture, genes, role: 'farmer' }, 30, 'folk-none').pixels[2 * 8 + 2];
+    expect(skin('russian', 0xffffffff)).toBe(SPRITE.skin[0]);
+    expect(skin('baloch', 0xffffffff)).toBe(SPRITE.skin[2]);
+    expect(skin('russian', 0)).toBe(SPRITE.skin[1]);
+    const slim = spriteOf({ ...adult, genes: 0, role: 'farmer' }, 30, 'folk-none');
+    const broad = spriteOf({ ...adult, genes: 0xffffffff, role: 'farmer' }, 30, 'folk-none');
+    expect(slim.pixels[4 * 8 + 1]).not.toBe(broad.pixels[4 * 8 + 1]);
+    const man = { ...adult, culture: 'uyghur', sex: 'm' as const, role: 'farmer' as const };
+    expect(spriteOf({ ...man, genes: 0 }, 30, 'sunni').pixels).toContain(SPRITE.cap);
+    expect(spriteOf({ ...man, genes: 0xffffffff }, 30, 'sunni').pixels).not.toContain(SPRITE.cap);
   });
 });
