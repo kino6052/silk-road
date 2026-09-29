@@ -10,6 +10,7 @@ export interface RngKey {
 export interface Rng {
   next(): number;
   float(): number;
+  int(min: number, maxExclusive: number): number;
 }
 
 /** 2^32: turns a uint32 into a float in [0, 1). */
@@ -27,5 +28,8 @@ export function createRng(key: RngKey): Rng {
   return {
     next,
     float: () => next() / UINT32_RANGE,
+    int: () => {
+      throw new Error('not implemented');
+    },
   };
 }

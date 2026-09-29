@@ -65,4 +65,35 @@ describe('createRng', () => {
     for (let i = 0; i < draws; i++) sum += rng.float();
     expect(sum / draws).toBeCloseTo(0.5, 2);
   });
+
+  it('draws integers in [min, maxExclusive)', () => {
+    const boundsArb = fc
+      .tuple(fc.integer({ min: -1e6, max: 1e6 }), fc.integer({ min: 1, max: 1e6 }))
+      .map(([min, span]) => [min, min + span] as const);
+    fc.assert(
+      fc.property(keyArb, boundsArb, (key, [min, max]) => {
+        const rng = createRng(key);
+        for (let i = 0; i < 8; i++) {
+          const value = rng.int(min, max);
+          expect(Number.isInteger(value)).toBe(true);
+          expect(value).toBeGreaterThanOrEqual(min);
+          expect(value).toBeLessThan(max);
+        }
+      }),
+    );
+  });
+
+  it('reaches every integer of a small range', () => {
+    const rng = createRng({ seed: 7, stream: 'coverage', entity: 0, tick: 0 });
+    const seen = new Set(Array.from({ length: 200 }, () => rng.int(-2, 3)));
+    expect([...seen].sort((a, b) => a - b)).toEqual([-2, -1, 0, 1, 2]);
+  });
+
+  it('rejects empty or non-integer ranges', () => {
+    const rng = createRng({ seed: 1, stream: 'bounds', entity: 0, tick: 0 });
+    expect(() => rng.int(3, 3)).toThrow(RangeError);
+    expect(() => rng.int(5, 2)).toThrow(RangeError);
+    expect(() => rng.int(0.5, 2)).toThrow(RangeError);
+    expect(() => rng.int(0, 2.5)).toThrow(RangeError);
+  });
 });
