@@ -17,6 +17,12 @@ describe('generation helpers', () => {
 });
 
 describe('generatePopulation', () => {
+  it('never produces -0, which JSON saves would turn into 0', () => {
+    // Seed 1731320466 once produced a newborn with birthWeek -0 (found by fast-check).
+    const { people: sample } = generatePopulation(content, 1731320466, 20);
+    expect(sample.some((person) => Object.is(person.birthWeek, -0))).toBe(false);
+  });
+
   it('is deterministic for a seed and varies with it', () => {
     expect(generatePopulation(content, 42, 300)).toEqual(population);
     expect(generatePopulation(content, 43, 300).people[0]).not.toEqual(people[0]);

@@ -206,7 +206,8 @@ export function generatePopulation(content: Content, seed: number, target: numbe
           birthRegion: region.id,
           culture: culture.id,
           sex: member.sex,
-          birthWeek: -(member.age * 52 + rng.int(0, 52)),
+          // `0 - x` rather than `-x`: a newborn must get +0, which survives JSON, not -0.
+          birthWeek: 0 - (member.age * 52 + rng.int(0, 52)),
           deathWeek: null,
           given: givenName(rng, culture, member.sex),
           family: familyName(culture, member.familyIndex, member.sex),
