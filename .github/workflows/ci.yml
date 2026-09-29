@@ -1,16 +1,17 @@
-name: CI
+name: Deploy
 
+# Tests run locally (pre-push hook: npm run verify); CI only builds and publishes the site.
 on:
   push:
-  pull_request:
   workflow_dispatch:
 
 concurrency:
-  group: ci-${{ github.ref }}
+  group: pages-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  verify:
+  build:
+    if: github.ref_name == github.event.repository.default_branch
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -19,15 +20,13 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm run verify
+      - run: npm run build
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
 
-  # Every green push to the default branch goes live on GitHub Pages.
   deploy:
-    needs: verify
-    if: github.event_name != 'pull_request' && github.ref_name == github.event.repository.default_branch
+    needs: build
     runs-on: ubuntu-latest
     permissions:
       pages: write
