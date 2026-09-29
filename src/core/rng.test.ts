@@ -30,4 +30,18 @@ describe('createRng', () => {
       }),
     );
   });
+
+  it('gives an independent sequence when any single key field changes', () => {
+    const variants: ((key: RngKey) => RngKey)[] = [
+      (key) => ({ ...key, seed: (key.seed + 1) % UINT32_LIMIT }),
+      (key) => ({ ...key, stream: `${key.stream}x` }),
+      (key) => ({ ...key, entity: key.entity + 1 }),
+      (key) => ({ ...key, tick: key.tick + 1 }),
+    ];
+    fc.assert(
+      fc.property(keyArb, (key) => {
+        for (const vary of variants) expect(draw(vary(key), 4)).not.toEqual(draw(key, 4));
+      }),
+    );
+  });
 });
