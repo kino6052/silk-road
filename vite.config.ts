@@ -2,7 +2,8 @@ import { defineConfig } from 'vitest/config';
 
 // Logic lives everywhere under src/ and pipeline/ except the view layer.
 // View files only draw and forward input, so they are excluded from coverage.
-const VIEW_FILES = ['src/view/**', 'src/main.ts', 'src/worker/bootstrap.ts'];
+// Entry points that only wire real I/O are excluded the same way.
+const VIEW_FILES = ['src/view/**', 'src/main.ts', 'src/worker/bootstrap.ts', 'pipeline/cli.ts'];
 
 export default defineConfig({
   base: './',

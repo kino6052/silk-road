@@ -20,7 +20,8 @@
     "format": "prettier --cache --write .",
     "format:check": "prettier --cache --check .",
     "verify": "node scripts/parallel.js format:check lint typecheck coverage && npm run build",
-    "hooks": "git config core.hooksPath .githooks"
+    "hooks": "git config core.hooksPath .githooks",
+    "data": "node pipeline/cli.ts"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
