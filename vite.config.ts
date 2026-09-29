@@ -8,6 +8,8 @@ export default defineConfig({
   base: './',
   test: {
     include: ['src/**/*.test.ts', 'pipeline/**/*.test.ts', 'tests/**/*.test.ts'],
+    // The whole suite must finish within 2 s (scripts/time-budget-reporter.js).
+    reporters: ['default', './scripts/time-budget-reporter.js'],
     coverage: {
       provider: 'v8',
       include: ['src/**/*.ts', 'pipeline/**/*.ts'],

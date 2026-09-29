@@ -21,6 +21,16 @@ Red commits fail their tests on purpose, so no commit hook blocks failing tests.
 Push only after a green or blue commit. The pre-push hook and CI run `npm run verify`
 on the pushed tip, and every green push to the default branch deploys to GitHub Pages.
 
+**Speed first.** The goal is to ship the game quickly:
+
+- Run the test suite every ~10 cycles and before every push, not after every phase. If a
+  batch run shows a red that did not fail or a green that does not pass, fix it in a
+  `fix(green): …` commit.
+- The whole suite must finish within **2 seconds**. `scripts/time-budget-reporter.js`
+  fails the run when it doesn't. Keep property tests small (`numRuns`) and long
+  simulations out of unit tests.
+- Keep cycles meaningful but small enough to finish in one step. Don't gold-plate.
+
 ## Coverage: 100% of logic, 0% of view
 
 - Logic lives in `src/{core,sim,gen,vm,app,i18n,content,worker}` and `pipeline/`. It must
