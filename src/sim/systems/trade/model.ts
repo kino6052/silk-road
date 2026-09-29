@@ -102,7 +102,7 @@ export interface LinkCost {
 }
 
 export const LINK_COST: Readonly<Record<LinkKind, LinkCost>> = {
-  rail: { usdPerKm: 0.4, kmh: 35, teuPerCapacity: 50_000 },
+  rail: { usdPerKm: 0.4, kmh: 35, teuPerCapacity: 22_000 },
   road: { usdPerKm: 1, kmh: 50, teuPerCapacity: 10_000 },
   sea: { usdPerKm: 0.05, kmh: 30, teuPerCapacity: 1_000_000 },
   ferry: { usdPerKm: 1, kmh: 15, teuPerCapacity: 10_000 },
@@ -131,11 +131,11 @@ export const TRADE_PARAMS = {
   /** Real growth of container demand per year. */
   demandGrowth: 0.03,
   /** Transit penalty through a sanctioned country at severity 1, USD per TEU-km. */
-  sanctionUsdPerKm: 0.25,
+  sanctionUsdPerKm: 0.04,
   /** Penalty for crossing a sanctioned border at severity 1, USD per TEU. */
-  sanctionUsdPerBorder: 1000,
+  sanctionUsdPerBorder: 250,
   /** Share of demand to or from a country lost at sanctions severity 1. */
-  sanctionDemandCut: 0.5,
+  sanctionDemandCut: 0.15,
   /** War-risk surcharge per link touching a disrupted node, × (1 − factor), USD per TEU. */
   disruptionRiskUsd: 1000,
   /** Congestion cost at volume = capacity, USD per TEU (grows with the 4th power). */

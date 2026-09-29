@@ -116,7 +116,7 @@ const run = (world: World): World => {
   return world;
 };
 const worldAt = (year: number, bri = true): World => {
-  const world = createWorld(content, { seed: 1, bri });
+  const world = createWorld(content, { seed: 1, bri, people: 0 });
   world.week = Math.max(0, dateToWeek({ year, month: 7, day: 1 }));
   return world;
 };
@@ -236,7 +236,9 @@ describe('trade system', () => {
     effect(world, { kind: 'pandemic', severity: 0.5, weeks: 10 });
     run(world);
     expect(world.links).toEqual(baseline.links);
-    expect(world.stats).toEqual(baseline.stats);
+    const { 'trade.drivers': _drivers, ...stats } = world.stats;
+    const { 'trade.drivers': _baseline, ...expected } = baseline.stats;
+    expect(stats).toEqual(expected);
   });
 
   it('spreads flow over alternative routes when a link is congested', () => {
@@ -247,19 +249,20 @@ describe('trade system', () => {
     expect(stat(world, 'trade.cape.teu')).toBeGreaterThan(0);
   });
 
-  it('diverts EU-bound rail from sanctioned Russia to the Middle Corridor', () => {
+  it('diverts part of EU-bound rail from sanctioned Russia to the Middle Corridor', () => {
     const open = run(worldAt(2022));
     const sanctioned = worldAt(2022);
     (sanctioned.countries.RUS as { sanctions: number }).sanctions = 0.6;
     run(sanctioned);
+    // Calibrated to 2022–23: transit wasn't banned, so only part of the traffic shifts.
     expect(stat(sanctioned, 'trade.corridor.middle')).toBeGreaterThan(
-      1.3 * stat(open, 'trade.corridor.middle'),
+      stat(open, 'trade.corridor.middle'),
     );
     expect(flow(sanctioned, 'aktau~baku-alat~sea')).toBeGreaterThan(
-      1.3 * flow(open, 'aktau~baku-alat~sea'),
+      flow(open, 'aktau~baku-alat~sea'),
     );
     expect(stat(sanctioned, 'trade.corridor.northern')).toBeLessThan(
-      stat(open, 'trade.corridor.northern') / 2,
+      0.9 * stat(open, 'trade.corridor.northern'),
     );
     // China–Russia cargo has no way round Russia and keeps running.
     expect(stat(sanctioned, 'trade.corridor.northern')).toBeGreaterThan(0);

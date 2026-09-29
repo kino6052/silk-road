@@ -9,6 +9,7 @@ import { createEnvironmentSystem } from './systems/environment';
 import { createFinanceSystem } from './systems/finance';
 import { createLabourSystem } from './systems/labour';
 import { createProjectsSystem } from './systems/projects';
+import { createTradeSystem } from './systems/trade';
 import { createTimelineSystem } from './systems/timeline';
 import { createWorld } from './world/world';
 
@@ -32,6 +33,7 @@ export function macroSystems(content: Content): System[] {
     createProjectsSystem(content),
     createEconomySystem(content),
     createFinanceSystem(content),
+    createTradeSystem(content),
     createLabourSystem(content),
     createEnvironmentSystem(content),
   ];

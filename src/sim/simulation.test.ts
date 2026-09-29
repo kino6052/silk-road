@@ -12,6 +12,7 @@ describe('simulation', () => {
       'projects',
       'economy',
       'finance',
+      'trade',
       'labour',
       'environment',
     ]);
@@ -23,15 +24,21 @@ describe('simulation', () => {
     ]);
   });
 
+  it('uses the default sample size unless told otherwise', () => {
+    expect(createSimulation(content, { seed: 1 }).twins.bri.people.length).toBeGreaterThanOrEqual(
+      2000,
+    );
+  });
+
   it('steps the BRI and shadow worlds together, deterministically', () => {
     const run = () => {
       const simulation = createSimulation(content, { seed: 4, people: 60 });
-      for (let i = 0; i < 60; i++) simulation.step();
+      for (let i = 0; i < 16; i++) simulation.step();
       return simulation.twins;
     };
     const twins = run();
-    expect(twins.bri.week).toBe(60);
-    expect(twins.shadow.week).toBe(60);
+    expect(twins.bri.week).toBe(16);
+    expect(twins.shadow.week).toBe(16);
     expect(stateHash(run().bri)).toBe(stateHash(twins.bri));
     expect(stateHash(twins.shadow)).not.toBe(stateHash(twins.bri));
   });

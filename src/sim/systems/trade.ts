@@ -1,3 +1,4 @@
+import { hashString } from '../../core/hash';
 // Trade and logistics: weekly container demand between Chinese origins and corridor
 // destinations, a logit split between the land mode (rail, road, Caspian ferry) and the
 // sea mode, and incremental generalised-cost assignment on the route graph. Disruptions
@@ -72,6 +73,10 @@ function activeOds(net: Network): ActiveOd[][] {
   }
   return [...byOrigin.values()];
 }
+
+/** Weeks between routine recomputations of freight flows. */
+export const RECOMPUTE_WEEKS = 4;
+const DRIVERS_KEY = 'trade.drivers';
 
 export function createTradeSystem(content: Content): System {
   const net = buildNetwork(content);
@@ -253,6 +258,16 @@ export function createTradeSystem(content: Content): System {
   return {
     id: 'trade',
     step(world) {
+      // Freight patterns are recomputed monthly, or at once when what drives them changes.
+      const drivers = hashString(
+        [
+          ...world.effects.map((active) => active.source),
+          ...Object.values(world.countries).map((country) => country.sanctions),
+          ...Object.values(world.links).map((link) => (link.open ? 1 : 0)),
+        ].join('|'),
+      );
+      if (world.week % RECOMPUTE_WEEKS !== 0 && world.stats[DRIVERS_KEY] === drivers) return;
+      world.stats[DRIVERS_KEY] = drivers;
       flow.fill(0);
       nodeThroughput.fill(0);
       const totals: Totals = {
