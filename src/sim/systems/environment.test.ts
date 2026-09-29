@@ -22,7 +22,7 @@ import { createLabourSystem } from './labour';
 const setup = (projects: readonly Project[] = []) => {
   const content = societyContent(projects);
   return {
-    world: createWorld(content, { seed: 1, bri: true }),
+    world: createWorld(content, { seed: 1, bri: true, people: 0 }),
     systems: [createEnvironmentSystem(content)],
   };
 };
@@ -180,7 +180,7 @@ describe('the no-BRI shadow world', () => {
       }),
     ]);
     const systems = createPipeline([createLabourSystem(content), createEnvironmentSystem(content)]);
-    const twins = createTwins(1, (options) => createWorld(content, options));
+    const twins = createTwins(1, (options) => createWorld(content, { ...options, people: 0 }));
     const { bri, shadow } = twins;
     for (const world of [bri, shadow]) setStatus(world, 'construction', 'bri-coal', 'local-port');
     stepTwins(twins, systems);

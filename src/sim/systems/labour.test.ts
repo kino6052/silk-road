@@ -23,7 +23,7 @@ import {
 const setup = (projects: readonly Project[] = []) => {
   const content = societyContent(projects);
   return {
-    world: createWorld(content, { seed: 1, bri: true }),
+    world: createWorld(content, { seed: 1, bri: true, people: 0 }),
     systems: [createLabourSystem(content)],
   };
 };

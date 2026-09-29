@@ -26,9 +26,11 @@ on the pushed tip, and every green push to the default branch deploys to GitHub 
 - Run the test suite every ~10 cycles and before every push, not after every phase. If a
   batch run shows a red that did not fail or a green that does not pass, fix it in a
   `fix(green): …` commit.
-- The whole suite must finish within **2 seconds**. `scripts/time-budget-reporter.js`
-  fails the run when it doesn't. Keep property tests small (`numRuns`) and long
-  simulations out of unit tests.
+- The unit suite (`npm test`) must finish within **2 seconds**; the history calibration
+  (`npm run calibrate`, a 2013–2024 simulation) has its own 4-second budget.
+  Both run in `npm run verify` and CI.
+  `scripts/time-budget-reporter.js` fails a run that goes over. Keep property tests small
+  (`numRuns`) and long simulations out of unit tests.
 - Keep cycles meaningful but small enough to finish in one step. Don't gold-plate.
 
 ## Coverage: 100% of logic, 0% of view

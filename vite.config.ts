@@ -14,7 +14,8 @@ const VIEW_FILES = [
 export default defineConfig({
   base: './',
   test: {
-    include: ['src/**/*.test.ts', 'pipeline/**/*.test.ts', 'tests/**/*.test.ts'],
+    // Unit tests only; the long history calibration runs separately (vitest.calibration.config.ts).
+    include: ['src/**/*.test.ts', 'pipeline/**/*.test.ts', 'tests/determinism/**/*.test.ts'],
     // The whole suite must finish within 2 s (scripts/time-budget-reporter.js).
     reporters: ['default', './scripts/time-budget-reporter.js'],
     // Tests build their own fixtures and share no mutable module state, so files can reuse

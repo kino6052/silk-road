@@ -6,7 +6,7 @@ import indicators from './generated/indicators.json';
 import { LINKS, NODES } from './network';
 import { PROJECTS } from './projects';
 import { REGIONS } from './regions';
-import type { Content, Indicators } from './types';
+import type { Content } from './types';
 
 /** All static content the game is built from. */
 export const CONTENT: Content = {
@@ -17,6 +17,6 @@ export const CONTENT: Content = {
   links: LINKS,
   projects: PROJECTS,
   events: EVENTS,
-  indicators: indicators as Indicators,
+  indicators: indicators,
   demography: DEMOGRAPHY,
 };

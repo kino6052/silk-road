@@ -19,9 +19,10 @@
     "lint": "eslint --cache --cache-location node_modules/.cache/eslint/ .",
     "format": "prettier --cache --write .",
     "format:check": "prettier --cache --check .",
-    "verify": "npm run -s coverage && node scripts/parallel.js format:check lint typecheck && npm run -s build",
+    "verify": "npm run -s coverage && npm run -s calibrate && node scripts/parallel.js format:check lint typecheck && npm run -s build",
     "hooks": "git config core.hooksPath .githooks",
-    "data": "node pipeline/cli.ts"
+    "data": "node pipeline/cli.ts",
+    "calibrate": "TEST_BUDGET_MS=4000 vitest run --config vitest.calibration.config.ts"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
