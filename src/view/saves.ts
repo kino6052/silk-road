@@ -150,7 +150,7 @@ export function createSaves(
 
   const el = h(
     'div',
-    { className: 'group', role: 'group' },
+    { className: 'group saves', role: 'group' },
     resume,
     action(t('ui.save'), () => {
       requestSave('slot');

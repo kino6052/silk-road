@@ -788,3 +788,261 @@ select {
   height: 10px;
   margin: 3px 0;
 }
+
+/* ── Phones and small tablets ───────────────────────────────────────────────
+   A compact sticky HUD with swipeable button rows, the panel tabs as a bottom
+   navigation bar, touch-sized controls, and no sideways scrolling. */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+.map-canvas {
+  touch-action: manipulation;
+}
+
+@media (max-width: 760px) {
+  body {
+    font-size: 18px;
+  }
+
+  #app {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    overflow-x: hidden;
+  }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 6px;
+    padding: calc(6px + env(safe-area-inset-top)) 8px 8px;
+  }
+
+  .topbar h1 {
+    font-size: 9px;
+    margin: 0;
+    align-self: center;
+  }
+
+  .topbar .date {
+    font-size: 8px;
+    justify-self: end;
+    align-self: center;
+  }
+
+  .topbar .group,
+  .topbar .overlay,
+  .topbar .status {
+    grid-column: 1 / -1;
+  }
+
+  .topbar .group {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 4px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .topbar .group::-webkit-scrollbar {
+    display: none;
+  }
+
+  .topbar .group button {
+    flex: 1 0 auto;
+    white-space: nowrap;
+  }
+
+  button,
+  select {
+    min-height: 38px;
+    padding: 10px;
+  }
+
+  .topbar .overlay {
+    width: 100%;
+  }
+
+  .main {
+    padding: 8px 6px 72px;
+    gap: 12px;
+  }
+
+  .map-canvas,
+  .scene {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* The panel tabs become a bottom navigation bar. */
+  .side .tabs {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 60;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
+    background: var(--panel);
+    border-top: 2px solid var(--ink);
+    box-shadow: 0 -2px 0 var(--frame);
+  }
+
+  .side .tabs button {
+    min-height: 44px;
+  }
+
+  .panel {
+    padding: 10px 8px;
+  }
+
+  .rows {
+    width: 100%;
+    table-layout: fixed;
+  }
+
+  .rows td,
+  .rows th {
+    padding: 6px 4px;
+    overflow-wrap: anywhere;
+  }
+
+  .bar {
+    width: 100%;
+    max-width: 90px;
+  }
+
+  .beliefs td:last-child {
+    width: 22%;
+  }
+
+  .num {
+    font-size: 18px;
+  }
+
+  .thoughts li {
+    font-size: 20px;
+  }
+
+  .feed li {
+    font-size: 18px;
+    padding: 8px 2px;
+  }
+
+  .options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .options button {
+    flex: 1 1 40%;
+    min-height: 44px;
+  }
+
+  .household button {
+    min-height: 40px;
+  }
+
+  #app .intro,
+  #app[data-mode='micro'] .intro {
+    font-size: 20px;
+  }
+
+  button.primary {
+    width: 100%;
+    min-height: 48px;
+  }
+
+  .legend {
+    line-height: 2;
+  }
+}
+
+@media (max-width: 380px) {
+  .topbar h1 {
+    font-size: 8px;
+  }
+
+  button,
+  select {
+    font-size: 7px;
+  }
+}
+
+/* The menu of secondary controls: always open and inline on wide screens. */
+.menu > summary {
+  display: none;
+}
+
+.menu-items {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+}
+
+@media (max-width: 760px) {
+  .topbar .menu {
+    grid-column: 1 / -1;
+  }
+
+  .menu > summary {
+    display: block;
+    list-style: none;
+    font-family: var(--hud-font);
+    font-size: 8px;
+    text-transform: uppercase;
+    padding: 10px;
+    min-height: 38px;
+    background: var(--raised);
+    border: 2px solid var(--ink);
+    box-shadow:
+      inset 2px 2px 0 var(--bevel-light),
+      inset -2px -2px 0 var(--bevel-dark);
+    cursor: pointer;
+  }
+
+  .menu > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .menu > summary::after {
+    content: ' ▾';
+  }
+
+  .menu[open] > summary::after {
+    content: ' ▴';
+  }
+
+  .menu-items {
+    display: grid;
+    gap: 6px;
+    margin-top: 6px;
+  }
+
+  .menu-items .group {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 4px;
+    scrollbar-width: none;
+  }
+
+  .menu-items .group button {
+    flex: 1 0 auto;
+    white-space: nowrap;
+  }
+
+  .menu-items .overlay {
+    width: 100%;
+  }
+}

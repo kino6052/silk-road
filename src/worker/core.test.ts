@@ -29,6 +29,14 @@ describe('worker core', () => {
     expect(frame.state.country).toBe('AAA');
   });
 
+  it('dates frames to the day within the week, not just its Monday', () => {
+    const core = createCore(content, grid, 1, 40);
+    // Micro time runs a sim day per real minute: 75 s is 30 hours, into Tuesday.
+    const frame = frameOf(core.handle({ type: 'tick', elapsedMs: 75_000 }));
+    expect(frame.hour).toBe(30);
+    expect(frame.date).toEqual({ year: 2013, month: 9, day: 3 });
+  });
+
   it('advances time with the clock and applies commands', () => {
     const core = createCore(content, grid, 1, 40);
     core.handle({ type: 'mode', mode: 'macro' });

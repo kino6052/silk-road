@@ -265,5 +265,6 @@
   "ui.loading": "Building the world…",
   "ui.died": "died",
   "ui.absent": "absent",
-  "worker.failed": "Something went wrong in the simulation. Try reloading the page."
+  "worker.failed": "Something went wrong in the simulation. Try reloading the page.",
+  "ui.menu": "Menu"
 }

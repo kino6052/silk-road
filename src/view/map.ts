@@ -125,17 +125,22 @@ export function createMap(send: Send): { el: HTMLElement; render(frame: Frame): 
     return {
       x: ((event.clientX - box.left) / box.width) * width,
       y: ((event.clientY - box.top) / box.height) * height,
+      /** Map cells per screen pixel: the map shrinks on phones, so taps need more reach. */
+      perPixel: width / box.width,
     };
   };
   const countryAt = (x: number, y: number) =>
     grid.codes[grid.cells[Math.floor(y) * width + Math.floor(x)] ?? 0] ?? '';
 
   view.el.addEventListener('pointerdown', (event) => {
-    const { x, y } = cellAt(event);
+    const { x, y, perPixel } = cellAt(event);
+    describe(event);
+    // Reach at least PICK_RADIUS cells, or ~16 screen pixels for fingers on small screens.
+    const reach = Math.max(PICK_RADIUS, (event.pointerType === 'touch' ? 16 : 8) * perPixel);
     let best: { id: number; d: number } | null = null;
     for (const dot of last?.map.people ?? []) {
       const d = Math.hypot(dot.x - x, dot.y - y);
-      if (d <= PICK_RADIUS && (!best || d < best.d)) best = { id: dot.id, d };
+      if (d <= reach && (!best || d < best.d)) best = { id: dot.id, d };
     }
     if (best) {
       send({ type: 'person', person: best.id });
@@ -145,7 +150,8 @@ export function createMap(send: Send): { el: HTMLElement; render(frame: Frame): 
     if (corridor.has(country)) send({ type: 'country', country });
   });
 
-  view.el.addEventListener('pointermove', (event) => {
+  /** Names the place under the pointer (on tap too, since phones have no hover). */
+  function describe(event: MouseEvent): void {
     const { x, y } = cellAt(event);
     const region = CONTENT.regions[regions[Math.floor(y) * width + Math.floor(x)] ?? -1];
     const country = countryAt(x, y);
@@ -154,7 +160,8 @@ export function createMap(send: Send): { el: HTMLElement; render(frame: Frame): 
       : corridor.has(country)
         ? t(`country.${country}`)
         : ' ';
-  });
+  }
+  view.el.addEventListener('pointermove', describe);
 
   const render = (frame: Frame) => {
     last = frame;
