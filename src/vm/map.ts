@@ -1,5 +1,6 @@
 import type { Content, Mode } from '../content/types';
 import { hashWords } from '../core/hash';
+import { required } from '../core/required';
 import { project, type MapGrid } from '../gen/map';
 import { ROLE_GROUP } from '../sim/people/roles';
 import type { RoleGroup } from '../sim/people/types';
@@ -53,7 +54,7 @@ function overlayValue(world: World, region: string, country: string, overlay: Ov
     case 'china':
       return clamp01((state.sentiment.china + 1) / 2);
     case 'debt':
-      return clamp01(world.countries[country]?.debtDistress ?? 0);
+      return clamp01(required(world.countries[country], 'country state').debtDistress);
     case 'wellbeing': {
       const residents = world.people.filter((p) => p.deathWeek === null && p.region === region);
       if (residents.length === 0) return 0.5;
@@ -75,10 +76,9 @@ export function mapVm(world: World, content: Content, grid: MapGrid, overlay: Ov
       overlayValue(world, region.id, region.country, overlay),
     ),
     links: content.links.flatMap((link) => {
-      const from = nodes.get(link.from);
-      const to = nodes.get(link.to);
-      const state = world.links[link.id];
-      if (!from || !to || !state) return [];
+      const from = required(nodes.get(link.from), `node ${link.from}`);
+      const to = required(nodes.get(link.to), `node ${link.to}`);
+      const state = required(world.links[link.id], `link ${link.id}`);
       return [
         {
           x1: from.x,

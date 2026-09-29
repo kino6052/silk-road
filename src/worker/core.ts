@@ -42,6 +42,8 @@ export type Reply =
 
 export interface Core {
   handle(message: Message): Reply;
+  /** The current twins, for inspection (tests, debugging); treat as read-only. */
+  readonly twins: Twins;
 }
 
 interface Save {
@@ -55,7 +57,7 @@ const SAVE_FORMAT = 1;
 const FEED_LENGTH = 30;
 
 /** The cold-open protagonist: a trucker near Khorgos if there is one, else the first adult. */
-function protagonist(world: World): number {
+export function protagonist(world: World): number {
   const living = world.people.filter((p) => p.deathWeek === null && p.role !== 'child');
   const trucker = living.find((p) => p.region === 'KAZ-ALA' && p.role === 'truck-driver');
   return required(trucker ?? living[0], 'protagonist').id;
@@ -92,6 +94,9 @@ export function createCore(content: Content, grid: MapGrid, seed: number, people
   };
 
   return {
+    get twins() {
+      return simulation.twins;
+    },
     handle: (message) => {
       switch (message.type) {
         case 'tick': {

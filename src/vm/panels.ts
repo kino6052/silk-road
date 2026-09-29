@@ -5,7 +5,7 @@ import { sceneOf, type Scene } from '../gen/scene';
 import { spriteOf, type Sprite } from '../gen/sprite';
 import { thoughtsOf, type Thought } from '../gen/thoughts';
 import type { Twins } from '../sim/engine/engine';
-import { topicKind, truths } from '../sim/minds/topics';
+import { topicKind, truthOf, truths } from '../sim/minds/topics';
 import { activityAt, festivalOn } from '../sim/people/routine';
 import type { Person, Wellbeing } from '../sim/people/types';
 import type { World } from '../sim/world/world';
@@ -158,7 +158,7 @@ export function feedVm(world: World, content: Content, limit: number): FeedItem[
     if (tp.chosen === null) continue;
     const person = required(world.people[tp.person], 'person');
     items.push({
-      week: tp.decidedWeek ?? tp.week,
+      week: tp.week,
       person: tp.person,
       key: `feed.decided.${tp.kind}.${tp.chosen}`,
       params: paramsOf(person, tp.chosen),
@@ -230,7 +230,7 @@ export function mindVm(twins: Twins, content: Content, id: number, hourOfWeek: n
         topic,
         kind: topicKind(topic),
         believed: belief.value,
-        truth: truth.get(topic) ?? 0.5,
+        truth: truthOf(truth, topic),
         source: belief.source,
         confidence: belief.confidence,
       }))

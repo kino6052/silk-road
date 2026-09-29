@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import type { MapGrid } from '../gen/map';
 import { fixtureContent } from '../sim/testing/content.fixture';
-import { createCore } from './core';
+import { createWorld } from '../sim/world/world';
+import { createCore, protagonist } from './core';
 
 const content = fixtureContent();
 const grid: MapGrid = {
@@ -63,5 +64,33 @@ describe('worker core', () => {
       type: 'error',
       message: 'save.invalid',
     });
+  });
+
+  it('prefers a trucker near Khorgos for the cold open', () => {
+    const world = createWorld(content, { seed: 1, bri: true, people: 40 });
+    const trucker = world.people.find((p) => p.role !== 'child' && p.id > 5);
+    if (!trucker) throw new Error('fixture');
+    Object.assign(trucker, { region: 'KAZ-ALA', role: 'truck-driver' });
+    expect(protagonist(world)).toBe(trucker.id);
+  });
+
+  it('accepts nudges on open turning points and uses the default sample size', () => {
+    const core = createCore(content, grid, 1);
+    expect(core.twins.bri.people.length).toBeGreaterThanOrEqual(2000);
+    const person = core.twins.bri.people.find((p) => p.role !== 'child');
+    if (!person) throw new Error('fixture');
+    core.twins.bri.turningPoints.push({
+      id: 'open',
+      person: person.id,
+      kind: 'emigrate',
+      week: 0,
+      options: ['leave', 'stay'],
+      nudge: null,
+      chosen: null,
+      decidedWeek: null,
+      reasons: [],
+    });
+    expect(core.handle({ type: 'nudge', turningPoint: 'open', option: 'stay' }).type).toBe('frame');
+    expect(core.twins.shadow.pendingNudges).toHaveLength(1);
   });
 });

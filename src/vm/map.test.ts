@@ -56,4 +56,14 @@ describe('map view-model', () => {
     if (first) first.deathWeek = 0;
     expect(mapVm(world, content, grid, 'none').people.length).toBe(vm.people.length - 1);
   });
+
+  it('shows neutral wellbeing for a region nobody in the sample lives in', () => {
+    const empty = createWorld(content, { seed: 1, bri: true, people: 20 });
+    for (const person of empty.people) if (person.region === 'AAA-TWO') person.deathWeek = 0;
+    expect(
+      mapVm(empty, content, grid, 'wellbeing').overlay[
+        content.regions.findIndex((r) => r.id === 'AAA-TWO')
+      ],
+    ).toBe(0.5);
+  });
 });
