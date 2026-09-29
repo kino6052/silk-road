@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createPipeline, stepWorld } from '../engine/engine';
 import { fixtureContent } from '../testing/content.fixture';
+import { BRI_WORKFORCE_CAP, createPay } from '../people/pay';
 import { createWorld, type World } from '../world/world';
 import { createDecisionsSystem, DECISION_WEEKS, nudge } from './decisions';
 
@@ -189,5 +190,16 @@ describe('decisions system', () => {
         (tp) => tp.kind === 'job-offer' && shadow.people[tp.person]?.region === 'AAA-TWO',
       ),
     ).toBe(false);
+  });
+
+  it('stops hiring once the payrolls of a region reach their share of the labour force', () => {
+    const world = run(104, (w) => {
+      for (const person of w.people)
+        if (person.region === 'AAA-TWO' && person.role !== 'child') person.role = 'unemployed';
+    });
+    const payroll = createPay(content).payrolls(world).get('AAA-TWO');
+    if (!payroll) throw new Error('fixture');
+    expect(payroll.staff).toBeGreaterThan(0);
+    expect(payroll.staff).toBeLessThanOrEqual(Math.ceil(BRI_WORKFORCE_CAP * payroll.labour));
   });
 });

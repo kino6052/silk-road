@@ -114,6 +114,27 @@ describe('lifecycle system', () => {
     );
   });
 
+  it('ends contracts now and then, and mostly once the Belt and Road stops building there', () => {
+    const hired: Record<string, number[]> = { 'AAA-TWO': [], 'AAA-REST': [] };
+    const world = run(26, (w) => {
+      for (const person of w.people) {
+        const ids = hired[person.region];
+        if (!ids || ['child', 'student', 'retiree'].includes(person.role)) continue;
+        person.role = 'construction-worker';
+        person.employer = 'bri:AAA';
+        ids.push(person.id);
+      }
+    });
+    const kept = (region: string) => {
+      const ids = hired[region] ?? [];
+      return ids.filter((id) => world.people[id]?.employer === 'bri:AAA').length / ids.length;
+    };
+    expect(kept('AAA-TWO')).toBeGreaterThan(0.6);
+    expect(kept('AAA-REST')).toBeLessThan(0.4);
+    const laidOff = (hired['AAA-REST'] ?? []).map((id) => world.people[id]);
+    expect(laidOff.some((p) => p?.role === 'unemployed' && p.employer === null)).toBe(true);
+  });
+
   it('keeps only the most recent life events', () => {
     const person = tenYears.people[0];
     if (!person) throw new Error('no people');
