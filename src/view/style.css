@@ -1,3 +1,16 @@
+/* Pixel fonts, self-hosted (SIL Open Font License; see src/view/fonts/OFL-*.txt). */
+@font-face {
+  font-family: 'Press Start 2P';
+  src: url('./fonts/PressStart2P-Regular.ttf') format('truetype');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'VT323';
+  src: url('./fonts/VT323-Regular.ttf') format('truetype');
+  font-display: swap;
+}
+
 /* v0.1 debug view: dark, muted, pixel-crisp. */
 :root {
   --bg: #15171b;
@@ -509,4 +522,269 @@ button.whispered {
 
 button.whispered::after {
   content: ' \2713';
+}
+
+/* ── Retro HUD theme ─────────────────────────────────────────────────────────
+   Pixel fonts, bevelled buttons, framed windows and block bars, like the menus
+   of old strategy and role-playing games. Everything is square and crisp. */
+:root {
+  --hud-font: 'Press Start 2P', ui-monospace, monospace;
+  --body-font: 'VT323', ui-monospace, monospace;
+  --ink: #0b0c0e;
+  --frame: #3a3f4a;
+  --frame-light: #5a6170;
+  --bevel-light: rgba(255, 255, 255, 0.18);
+  --bevel-dark: rgba(0, 0, 0, 0.5);
+}
+
+*,
+*::before,
+*::after {
+  border-radius: 0 !important;
+}
+
+body {
+  font: 20px/1.1 var(--body-font);
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: grayscale;
+  font-smooth: never;
+  text-rendering: optimizeSpeed;
+  letter-spacing: 0.02em;
+}
+
+/* Faint CRT scanlines over everything; they never catch the mouse. */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(to bottom, transparent 0 2px, rgba(0, 0, 0, 0.13) 2px 3px);
+  z-index: 1000;
+}
+
+h1,
+h2,
+h3,
+.topbar h1,
+.panel h2,
+.household h3,
+th,
+.legend,
+.hint,
+.key,
+.badge,
+.clock,
+.date {
+  font-family: var(--hud-font);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.topbar h1 {
+  font-size: 12px;
+  color: var(--accent);
+  text-shadow: 2px 2px 0 var(--ink);
+}
+
+h2,
+.panel h2 {
+  font-size: 10px;
+  color: var(--accent);
+  text-shadow: 2px 2px 0 var(--ink);
+}
+
+h3,
+.household h3,
+th,
+.legend,
+.hint,
+.key,
+.badge {
+  font-size: 8px;
+  line-height: 1.6;
+}
+
+.date,
+.clock {
+  font-size: 10px;
+  color: var(--text);
+  text-shadow: 2px 2px 0 var(--ink);
+}
+
+/* Bevelled buttons and selects: raised at rest, pressed when active. */
+button,
+select {
+  font-family: var(--hud-font);
+  font-size: 8px;
+  line-height: 1;
+  padding: 7px 9px;
+  color: var(--text);
+  background: var(--raised);
+  border: 2px solid var(--ink);
+  box-shadow:
+    inset 2px 2px 0 var(--bevel-light),
+    inset -2px -2px 0 var(--bevel-dark);
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+button:hover,
+select:hover {
+  background: var(--frame);
+}
+
+button:active,
+button.active,
+button.whispered {
+  box-shadow:
+    inset 2px 2px 0 var(--bevel-dark),
+    inset -2px -2px 0 var(--bevel-light);
+}
+
+button.active,
+button.primary {
+  background: var(--accent);
+  color: var(--ink);
+  text-shadow: none;
+}
+
+button.primary {
+  font-size: 10px;
+  padding: 10px 14px;
+}
+
+/* Windows: a black line, a grey frame and another black line, like an RPG menu. */
+.topbar,
+.panel,
+.scene,
+.map-canvas,
+.decision:not(:empty),
+.thoughts {
+  border: 2px solid var(--ink);
+  box-shadow:
+    0 0 0 2px var(--frame),
+    0 0 0 4px var(--ink),
+    inset 0 0 0 2px var(--bevel-light);
+}
+
+.panel,
+.topbar {
+  background: var(--panel);
+}
+
+/* Thoughts read like a dialogue box. */
+.thoughts {
+  background: var(--ink);
+  padding: 8px 10px;
+  margin: 8px 4px;
+}
+
+.thoughts li {
+  font-size: 22px;
+  line-height: 1.05;
+  font-style: normal;
+  color: #f1ead6;
+}
+
+.thoughts li::before {
+  content: '▸ ';
+  color: var(--accent);
+}
+
+/* Block bars: segmented like old health meters. */
+.bar,
+.track {
+  height: 12px;
+  background: var(--ink);
+  border: 2px solid var(--ink);
+  box-shadow: 0 0 0 1px var(--frame);
+}
+
+.bar.bri i,
+.bar.shadow i {
+  height: 100%;
+  background: repeating-linear-gradient(to right, var(--block) 0 6px, transparent 6px 8px);
+}
+
+.bar.bri i {
+  --block: var(--bri);
+}
+
+.bar.shadow i {
+  --block: var(--shadow);
+}
+
+.rows td,
+.rows th {
+  border-bottom: 2px dotted var(--line);
+}
+
+.num {
+  font-family: var(--body-font);
+  font-size: 20px;
+}
+
+.feed li {
+  font-size: 19px;
+  border-bottom: 2px dotted var(--line);
+}
+
+.feed li::before {
+  content: '▸ ';
+  color: var(--muted);
+}
+
+.feed .tone-up::before {
+  color: var(--up);
+}
+
+.feed .tone-down::before {
+  color: var(--down);
+}
+
+.badge,
+.badge.festival {
+  border: 2px solid var(--ink);
+  box-shadow: inset 1px 1px 0 var(--bevel-light);
+  padding: 3px 6px;
+}
+
+.intro,
+.intro.hint {
+  font-family: var(--body-font);
+  font-size: 22px;
+  line-height: 1.15;
+  text-transform: none;
+  letter-spacing: 0.02em;
+}
+
+select {
+  appearance: none;
+  padding-right: 22px;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--text) 50%),
+    linear-gradient(135deg, var(--text) 50%, transparent 50%);
+  background-position:
+    calc(100% - 12px) 50%,
+    calc(100% - 8px) 50%;
+  background-size: 4px 4px;
+  background-repeat: no-repeat;
+}
+
+#app .intro,
+#app[data-mode='micro'] .intro {
+  font-family: var(--body-font);
+  font-size: 22px;
+  line-height: 1.15;
+}
+
+.beliefs small {
+  font-family: var(--body-font);
+  font-size: 16px;
+}
+
+.pair .bar {
+  height: 10px;
+  margin: 3px 0;
 }
