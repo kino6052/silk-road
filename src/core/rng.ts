@@ -12,6 +12,7 @@ export interface Rng {
   float(): number;
   int(min: number, maxExclusive: number): number;
   chance(probability: number): boolean;
+  pick<T>(items: readonly T[]): T;
 }
 
 /** 2^32: turns a uint32 into a float in [0, 1). */
@@ -37,5 +38,8 @@ export function createRng(key: RngKey): Rng {
       return min + Math.floor(float() * (maxExclusive - min));
     },
     chance: (probability) => float() < probability,
+    pick: () => {
+      throw new Error('not implemented');
+    },
   };
 }

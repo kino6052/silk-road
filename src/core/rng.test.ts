@@ -116,4 +116,16 @@ describe('createRng', () => {
     for (let i = 0; i < draws; i++) if (rng.chance(0.3)) hits++;
     expect(hits / draws).toBeCloseTo(0.3, 2);
   });
+
+  it('picks every item of a list, and only its items', () => {
+    const rng = createRng({ seed: 11, stream: 'pick', entity: 0, tick: 0 });
+    const items = ['rail', 'road', 'sea'] as const;
+    const picked = new Set(Array.from({ length: 100 }, () => rng.pick(items)));
+    expect([...picked].sort()).toEqual(['rail', 'road', 'sea']);
+  });
+
+  it('refuses to pick from an empty list', () => {
+    const rng = createRng({ seed: 11, stream: 'pick', entity: 0, tick: 0 });
+    expect(() => rng.pick([])).toThrow(RangeError);
+  });
 });
