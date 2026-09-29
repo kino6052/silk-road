@@ -1,6 +1,34 @@
-export function parseCsv(_text: string): string[][] {
-  throw new Error('not implemented');
+/** Minimal RFC 4180 CSV parser: quoted fields, escaped quotes, CRLF or LF rows. */
+export function parseCsv(text: string): string[][] {
+  const rows: string[][] = [];
+  let row: string[] = [];
+  let field = '';
+  let quoted = false;
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    if (quoted) {
+      if (char === '"' && text[i + 1] === '"') {
+        field += '"';
+        i++;
+      } else if (char === '"') quoted = false;
+      else field += char;
+    } else if (char === '"') quoted = true;
+    else if (char === ',') {
+      row.push(field);
+      field = '';
+    } else if (char === '\n' || char === '\r') {
+      if (char === '\r' && text[i + 1] === '\n') i++;
+      row.push(field);
+      rows.push(row);
+      row = [];
+      field = '';
+    } else field += char;
+  }
+  if (field !== '' || row.length > 0) rows.push([...row, field]);
+  return rows;
 }
-export function toRecords(_rows: readonly (readonly string[])[]): Record<string, string>[] {
-  throw new Error('not implemented');
+
+export function toRecords(rows: readonly (readonly string[])[]): Record<string, string>[] {
+  const [header = [], ...body] = rows;
+  return body.map((cells) => Object.fromEntries(header.map((key, i) => [key, cells[i] ?? ''])));
 }
