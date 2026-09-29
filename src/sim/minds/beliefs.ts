@@ -68,7 +68,7 @@ export function createBeliefsSystem(content: Content): System {
     prime: (world, ctx) => {
       const truth = truths(world, content);
       for (const person of world.people) {
-        if (person.deathWeek === null) listen(world, person, truth, ctx.rng(person.id, 'prime'));
+        listen(world, person, truth, ctx.rng(person.id, 'prime'));
       }
     },
     step: (world, ctx) => {

@@ -113,7 +113,7 @@ export function createWellbeingSystem(
     id: 'wellbeing',
     prime: (world) => {
       for (const person of world.people) {
-        if (person.deathWeek === null) person.wellbeing = score(world, person);
+        person.wellbeing = score(world, person);
       }
     },
     step: (world) => {
