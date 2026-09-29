@@ -43,7 +43,7 @@ describe('decisions system', () => {
       expect(tp.reasons.length).toBeGreaterThan(0);
       expect(world.people[tp.person]?.log.some((e) => e.kind === 'decided')).toBe(true);
     }
-    const hired = decided.filter((tp) => tp.chosen === 'accept');
+    const hired = decided.filter((tp) => tp.kind === 'job-offer' && tp.chosen === 'accept');
     for (const tp of hired) expect(world.people[tp.person]?.role).toBe('construction-worker');
   });
 
@@ -55,7 +55,7 @@ describe('decisions system', () => {
     for (let i = 0; i < 104; i++) {
       stepWorld(world, pipeline);
       for (const tp of world.turningPoints) {
-        if (tp.chosen === null && tp.nudge === null) {
+        if (tp.chosen === null && tp.nudge === null && tp.kind === 'job-offer') {
           pending = nudge(world, tp.id, 'decline');
           nudged++;
         }
@@ -78,25 +78,28 @@ describe('decisions system', () => {
   });
 
   it('applies mirrored nudges to matching turning points in another world', () => {
+    const queued = new Set<number>();
     const world = run(52, (w) => {
       boomTown(w);
       for (const person of w.people) {
-        if (person.region === 'AAA-ONE') {
-          w.pendingNudges.push({
-            person: person.id,
-            kind: 'job-offer',
-            option: 'decline',
-            untilWeek: 1000,
-          });
-        }
+        if (person.region !== 'AAA-ONE') continue;
+        queued.add(person.id);
+        w.pendingNudges.push({
+          person: person.id,
+          kind: 'job-offer',
+          option: 'decline',
+          untilWeek: 1000,
+        });
       }
     });
-    const offers = world.turningPoints.filter((tp) => tp.kind === 'job-offer');
-    expect(offers.length).toBeGreaterThan(0);
-    expect(offers.every((tp) => tp.nudge === 'decline')).toBe(true);
-    expect(world.pendingNudges.length).toBeLessThan(
-      world.people.filter((p) => p.region === 'AAA-ONE').length,
+    const offers = world.turningPoints.filter(
+      (tp) => tp.kind === 'job-offer' && queued.has(tp.person),
     );
+    expect(offers.length).toBeGreaterThan(0);
+    // Each mirrored nudge applies once: to the person's first matching turning point.
+    const firsts = offers.filter((tp) => offers.find((o) => o.person === tp.person) === tp);
+    expect(firsts.every((tp) => tp.nudge === 'decline')).toBe(true);
+    expect(world.pendingNudges.length).toBeLessThan(queued.size);
   });
 
   it('drops expired pending nudges and keeps the record of turning points bounded', () => {
@@ -127,13 +130,37 @@ describe('decisions system', () => {
           person.log.push({ week: 0, kind: 'displaced', detail: person.region });
       }
     });
-    const kinds = new Set(world.turningPoints.map((tp) => tp.kind));
-    expect(kinds).toEqual(
-      new Set(['job-offer', 'relocation', 'protest', 'emigrate', 'bribe', 'speak-out']),
-    );
-    const byKind = (kind: string) =>
-      world.turningPoints.filter((tp) => tp.kind === kind && tp.chosen !== null);
-    for (const kind of kinds) expect(byKind(kind).length, kind).toBeGreaterThan(0);
+    for (const kind of ['job-offer', 'relocation', 'protest', 'emigrate', 'bribe', 'speak-out']) {
+      expect(world.stats[`decisions.raised.${kind}`], kind).toBeGreaterThan(0);
+      expect(world.stats[`decisions.decided.${kind}`], kind).toBeGreaterThan(0);
+    }
     expect(world.turningPoints.length).toBeLessThanOrEqual(400);
+  });
+
+  it('records refused nudges and closes turning points of people who died', () => {
+    const world = createWorld(content, { seed: 11, bri: true, people: 40 });
+    const [keen, gone] = world.people.filter((p) => p.role !== 'child' && p.role !== 'student');
+    if (!keen || !gone) throw new Error('fixture');
+    Object.assign(keen, { traits: { ...keen.traits, ambition: 1, risk: 1 } });
+    keen.wellbeing.income = 0;
+    const open = (person: number, kind: 'job-offer' | 'emigrate') => ({
+      id: `t:${String(person)}`,
+      person,
+      kind,
+      week: 0,
+      options: kind === 'job-offer' ? ['accept', 'decline'] : ['leave', 'stay'],
+      nudge: null,
+      chosen: null,
+      decidedWeek: null,
+      reasons: [],
+    });
+    world.turningPoints.push(open(keen.id, 'job-offer'), open(gone.id, 'emigrate'));
+    nudge(world, `t:${String(keen.id)}`, 'decline');
+    gone.deathWeek = 0;
+    for (let i = 0; i < DECISION_WEEKS + 1; i++) stepWorld(world, pipeline);
+    const [refused, closed] = world.turningPoints;
+    expect(refused).toMatchObject({ chosen: 'accept' });
+    expect(refused?.reasons[0]).toBe('reason.refused-nudge');
+    expect(closed).toMatchObject({ chosen: 'stay', reasons: ['reason.died'] });
   });
 });

@@ -52,7 +52,7 @@ const content: Content = {
 };
 
 const finance = createFinanceSystem(content);
-const newWorld = (bri = true) => createWorld(content, { seed: 1, bri });
+const newWorld = (bri = true) => createWorld(content, { seed: 1, bri, people: 0 });
 const country = (world: World, id: string) => world.countries[id] as CountryState;
 const build = (world: World, ...ids: string[]) => {
   for (const id of ids) (world.projects[id] as ProjectState).status = 'construction';
@@ -146,7 +146,7 @@ describe('finance system: loan book', () => {
 describe('finance system: debt distress', () => {
   const distressAfter = (weeks: number, setup: (world: World) => void, source = content) => {
     const system = createFinanceSystem(source);
-    const world = createWorld(source, { seed: 1, bri: true });
+    const world = createWorld(source, { seed: 1, bri: true, people: 0 });
     step(system, world, 0);
     setup(world);
     for (let week = 1; week <= weeks; week++) step(system, world, week);
@@ -243,7 +243,7 @@ describe('economy and finance together', () => {
   it('are deterministic across both worlds', () => {
     const pipeline = createPipeline([createEconomySystem(content), createFinanceSystem(content)]);
     const hashes = () => {
-      const twins = createTwins(3, (options) => createWorld(content, options));
+      const twins = createTwins(3, (options) => createWorld(content, { ...options, people: 0 }));
       build(twins.bri, 'rail-ab', 'road-a', 'dam-b');
       build(twins.shadow, 'road-a');
       for (let i = 0; i < 60; i++) stepTwins(twins, pipeline);

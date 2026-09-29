@@ -114,7 +114,7 @@ describe('createEconomyModel', () => {
 
 describe('economy system', () => {
   const pipeline = createPipeline([createEconomySystem(content)]);
-  const newWorld = (bri = true) => createWorld(content, { seed: 1, bri });
+  const newWorld = (bri = true) => createWorld(content, { seed: 1, bri, people: 0 });
   const run = (world: World, weeks: number) => {
     for (let i = 0; i < weeks; i++) stepWorld(world, pipeline);
     return world;
@@ -134,7 +134,7 @@ describe('economy system', () => {
   });
 
   it('removes the estimated BRI contribution from shadow-world GDP', () => {
-    const twins = createTwins(1, (options) => createWorld(content, options));
+    const twins = createTwins(1, (options) => createWorld(content, { ...options, people: 0 }));
     for (let i = 0; i < 100; i++) stepTwins(twins, pipeline);
     const date = weekToDate(99);
     const share = model.briContribution('AAA', date);
@@ -173,7 +173,7 @@ describe('economy system', () => {
 
   it('is deterministic', () => {
     const hashes = () => {
-      const twins = createTwins(9, (options) => createWorld(content, options));
+      const twins = createTwins(9, (options) => createWorld(content, { ...options, people: 0 }));
       for (let i = 0; i < 40; i++) stepTwins(twins, pipeline);
       return [stateHash(twins.bri), stateHash(twins.shadow)];
     };

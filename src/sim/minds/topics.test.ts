@@ -38,7 +38,10 @@ describe('topics', () => {
     expect(truth.get('economy:AAA')).toBeCloseTo(1, 9);
     expect(truth.get('economy:BBB')).toBeCloseTo(0.5, 9);
     // Chinese projects help when they bring jobs, hurt when they take land or foul the air.
-    expect(truth.get('china:AAA-ONE')).toBeGreaterThanOrEqual(0);
+    expect(truth.get('china:AAA-ONE')).toBe(0.5);
+    const project = world.projects['rail-ab'];
+    if (project) project.status = 'construction';
+    expect(truths(world, content).get('china:AAA-ONE')).toBeCloseTo(0.5 + 0.5 - 0.3 - 0.16, 9);
     expect(truth.get('china:AAA-REST')).toBeCloseTo(0.5, 9);
     for (const value of truth.values()) {
       expect(value).toBeGreaterThanOrEqual(0);

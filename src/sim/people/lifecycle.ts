@@ -42,6 +42,45 @@ export function annualMortality(age: number, lifeExpectancy: number): number {
   return Math.min(1, (0.0003 + 0.00002 * exp(0.095 * age) + infant) * frailty);
 }
 
+/** The most attractive other region in the same country, if clearly better than `from`. */
+export function bestRegionFor(world: World, content: Content, from: string): string | undefined {
+  const score = (id: string) => {
+    const state = required(world.regions[id], 'region state');
+    return state.income * (1 - state.unemployment);
+  };
+  const country = required(world.regions[from], 'region state').country;
+  let best: string | undefined;
+  for (const other of content.regions) {
+    if (other.country !== country || other.id === from) continue;
+    if (best === undefined || score(other.id) > score(best)) best = other.id;
+  }
+  return best !== undefined && score(best) > 1.1 * score(from) ? best : undefined;
+}
+
+/** Moves a person, their spouse and their minor children to a new household in `region`. */
+export function relocate(world: World, person: Person, region: string): void {
+  const old = required(world.households[person.household], 'household');
+  const householdId = world.households.length;
+  const wealth = old.wealth / 2;
+  old.wealth -= wealth;
+  world.households.push({ id: householdId, region, members: [], wealth, landHa: 0 });
+  const followers = old.members
+    .map((id) => required(world.people[id], 'person'))
+    .filter(
+      (other) =>
+        other.id === person.spouse ||
+        ((other.mother === person.id || other.father === person.id) &&
+          ageAt(other, world.week) < 18),
+    );
+  for (const mover of [person, ...followers]) {
+    old.members = old.members.filter((id) => id !== mover.id);
+    required(world.households[householdId], 'household').members.push(mover.id);
+    mover.household = householdId;
+    mover.region = region;
+    record(mover, world.week, 'moved', region);
+  }
+}
+
 /** Moves people through birth, school, work, marriage, migration, displacement and death. */
 export function createLifecycleSystem(content: Content): System {
   const features = regionFeatures(content);
@@ -202,33 +241,8 @@ export function createLifecycleSystem(content: Content): System {
     if (age < 18 || age > 45) return;
     if (person.role !== 'unemployed' && person.wellbeing.income >= 0.3) return;
     if (!rng.chance(MONTHLY_MIGRATION)) return;
-    const score = (id: string) => {
-      const state = required(world.regions[id], 'region state');
-      return state.income * (1 - state.unemployment);
-    };
-    let target: Region | undefined;
-    for (const other of content.regions) {
-      if (other.country !== region.country || other.id === region.id) continue;
-      if (!target || score(other.id) > score(target.id)) target = other;
-    }
-    if (!target || score(target.id) <= 1.1 * score(region.id)) return;
-    const old = required(world.households[person.household], 'household');
-    const householdId = world.households.length;
-    const wealth = old.wealth / 2;
-    old.wealth -= wealth;
-    world.households.push({ id: householdId, region: target.id, members: [], wealth, landHa: 0 });
-    const followers = old.members
-      .map((id) => required(world.people[id], 'person'))
-      .filter(
-        (other) =>
-          other.id === person.spouse ||
-          ((other.mother === person.id || other.father === person.id) &&
-            ageAt(other, world.week) < 18),
-      );
-    for (const mover of [person, ...followers]) {
-      moveTo(world, mover, householdId);
-      record(mover, world.week, 'moved', target.id);
-    }
+    const target = bestRegionFor(world, content, region.id);
+    if (target) relocate(world, person, target);
   };
 
   return {
