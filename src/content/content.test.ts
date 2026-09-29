@@ -5,7 +5,7 @@ import { CULTURES } from './cultures';
 import { REGIONS } from './regions';
 
 const catalog: Record<string, string> = en;
-const ids = <T extends { id: string }>(items: readonly T[]) => items.map((item) => item.id);
+const ids = (items: readonly { readonly id: string }[]) => items.map((item) => item.id);
 const sum = (values: readonly number[]) => values.reduce((total, value) => total + value, 0);
 const unit = (value: number) => value >= 0 && value <= 1;
 
