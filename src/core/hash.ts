@@ -21,6 +21,11 @@ export function hashWords(words: readonly number[], seed = 0): number {
   return fmix32(h);
 }
 
-export function hashString(_text: string): number {
-  throw new Error('not implemented');
+export function hashString(text: string): number {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < text.length; i++) {
+    h ^= text.charCodeAt(i);
+    h = Math.imul(h, 0x01000193);
+  }
+  return h >>> 0;
 }
