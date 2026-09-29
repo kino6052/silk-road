@@ -42,6 +42,7 @@ const content: Content = {
   ...base,
   countries: [...base.countries, { ...(base.countries[1] as Country), id: 'YYY' }],
   projects: [...base.projects, zone],
+  bri: [],
   indicators: {
     AAA: { 2013: year(50e9, 5e6), 2014: year(60e9, 5.1e6), 2015: year(null, 5.2e6) },
     BBB: { 2013: year(10e9, 2e6) },
@@ -146,8 +147,10 @@ describe('economy system', () => {
   });
 
   it('slows growth under sanctions, instability, trade shocks and debt distress', () => {
+    // Drags apply once the historical data ends (mid-2014 here); history already has them.
     const growthWith = (setup: (world: World) => void) => {
       const world = newWorld();
+      world.week = 70;
       setup(world);
       return run(world, 30).stats['economy.gdpGrowth.AAA'] as number;
     };
@@ -200,7 +203,13 @@ describe('the Belt and Road beyond flagship projects', () => {
     const china = createEconomyModel({
       ...withBri,
       countries: [...withBri.countries, { ...(withBri.countries[0] as Country), id: 'CHN' }],
-      indicators: { ...withBri.indicators, CHN: withBri.indicators.AAA ?? {} },
+      // A China-sized economy: contractor income is small next to its trade gain.
+      indicators: {
+        ...withBri.indicators,
+        CHN: {
+          2013: { population: 1.36e9, gdp: 1.6e13, co2: null, co2PerCapita: null, coalCo2: null },
+        },
+      },
       bri: [
         ...withBri.bri,
         { ...(withBri.bri[0] as BriEnvelope), country: 'CHN', totalBn: 0, tradeGain: 0.004 },

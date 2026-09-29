@@ -7,6 +7,7 @@ import {
   createPipeline,
   createTwins,
   stepTwins,
+  stepWorld,
   type System,
   type SystemContext,
 } from '../engine/engine';
@@ -40,6 +41,7 @@ const roadA: Project = {
 const damB: Project = { ...railAb, id: 'dam-b', country: 'BBB', region: 'BBB-REST', loanBn: 2 };
 const content: Content = {
   ...base,
+  bri: [],
   countries: [
     ...base.countries,
     { ...(base.countries[1] as Country), id: 'PAK', externalDebtBn: 60 },
@@ -263,6 +265,7 @@ describe('economy and finance together', () => {
     const bri = run(true);
     const envelopeLoans = bri.loans.filter((loan) => loan.id.startsWith('bri:AAA:'));
     expect(envelopeLoans.map((loan) => loan.id)).toEqual([
+      'bri:AAA:2013',
       'bri:AAA:2014',
       'bri:AAA:2015',
       'bri:AAA:2016',

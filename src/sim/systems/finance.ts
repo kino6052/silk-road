@@ -2,6 +2,7 @@ import { dateToWeek, EPOCH, type CivilDate } from '../../core/calendar';
 import type { Content, Country, Project } from '../../content/types';
 import type { System } from '../engine/engine';
 import type { CountryState, LoanState } from '../world/state';
+import { spendingBn } from './bri';
 import { createEconomyModel, nominalGdpBn } from './economy';
 
 const WEEKS_PER_YEAR = 52;
@@ -135,6 +136,9 @@ export function createFinanceSystem(content: Content): System {
     profile(country, index, economy.gdpAnchor(country.id, EPOCH) ?? 0),
   );
   const borrowing = content.projects.filter((project) => project.loanBn > 0);
+  const envelopes = content.bri.filter(
+    (envelope) => envelope.loanShare > 0 && envelope.totalBn > 0,
+  );
   const historyEndWeek = dateToWeek(HISTORY_ENDS);
 
   return {
@@ -149,6 +153,26 @@ export function createFinanceSystem(content: Content): System {
         const borrower = world.countries[project.country] as CountryState;
         borrower.externalDebt += loan.principal;
         if (isChinese(loan.lenders)) borrower.chinaDebt += loan.principal;
+      }
+
+      // The wider Belt and Road lends yearly, in the BRI world only.
+      for (const envelope of world.bri ? envelopes : []) {
+        const id = `bri:${envelope.country}:${String(ctx.date.year)}`;
+        if (booked.has(id)) continue;
+        const principal = spendingBn(envelope, ctx.date.year) * envelope.loanShare;
+        world.loans.push({
+          id,
+          project: 'bri-envelope',
+          borrower: envelope.country,
+          lenders: ['china-exim', 'cdb'],
+          principal,
+          rate: envelope.rate,
+          startWeek: ctx.week,
+          outstanding: principal,
+        });
+        const borrower = world.countries[envelope.country] as CountryState;
+        borrower.externalDebt += principal;
+        borrower.chinaDebt += principal;
       }
 
       const loanService: Record<string, number> = {};

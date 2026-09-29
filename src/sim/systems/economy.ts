@@ -1,6 +1,7 @@
-import { daysFromCivil, type CivilDate } from '../../core/calendar';
+import { civilFromDays, daysFromCivil, type CivilDate } from '../../core/calendar';
 import { pow } from '../../core/fixed-math';
-import type { Content, IndicatorYear, Project } from '../../content/types';
+import type { BriEnvelope, Content, IndicatorYear, Project } from '../../content/types';
+import { capitalBn, reliability, spendingBn } from './bri';
 import type { System } from '../engine/engine';
 import type { CountryState } from '../world/state';
 import type { World } from '../world/world';
@@ -49,6 +50,14 @@ export const PRODUCTIVITY_RETURN = 0.15;
 export const PRODUCTIVITY_CAP = 0.03;
 /** Most of GDP the BRI can add in all. */
 export const MAX_BRI_SHARE = 0.08;
+/** Share of BRI construction spending that stays in the host economy (the rest is imports). */
+export const LOCAL_SPENDING_SHARE = 0.5;
+/** Share of BRI construction abroad carried out by Chinese contractors... */
+export const CHINESE_CONTRACTOR_SHARE = 0.5;
+/** ...and the share of that turnover that is Chinese value added. */
+export const CHINESE_VALUE_ADDED = 0.4;
+/** Output lost per USD of interest paid abroad on BRI loans. */
+export const DEBT_SERVICE_COST = 0.5;
 /** Build time assumed for projects with no historical opening date. */
 export const DEFAULT_BUILD_YEARS = 4;
 
@@ -88,7 +97,15 @@ interface CountryModel {
   readonly id: string;
   readonly gdp: Series;
   readonly population: Series;
+  /** Flagship BRI projects in the country. */
   readonly bri: readonly BuildWindow[];
+  /** The rest of the BRI in the country (none for countries it doesn't reach). */
+  readonly envelope: BriEnvelope | undefined;
+  /** For China: every BRI project and envelope abroad, whose contracts it carries out. */
+  readonly abroad: {
+    readonly projects: readonly BuildWindow[];
+    readonly envelopes: readonly BriEnvelope[];
+  };
 }
 
 export interface EconomyModel {
@@ -153,17 +170,50 @@ function buildWindow(project: Project): BuildWindow {
   };
 }
 
-/** Share of GDP due to BRI construction spending and operating BRI capital on `day`. */
+/** Fractional calendar year of a day number. */
+function yearOf(day: number): number {
+  const { year } = civilFromDays(day);
+  const start = daysFromCivil({ year, month: 1, day: 1 });
+  return year + (day - start) / (daysFromCivil({ year: year + 1, month: 1, day: 1 }) - start);
+}
+
+/** Yearly spending of flagship projects under construction on `day`. */
+const flagshipSpending = (projects: readonly BuildWindow[], day: number) =>
+  projects.reduce((sum, p) => sum + (day >= p.start && day < p.end ? p.spendPerYear : 0), 0);
+
+/**
+ * Share of GDP due to the Belt and Road on `day`: construction spending and operating
+ * capital of flagship projects and the wider envelope, the trade-cost gain as corridors
+ * become reliable, minus interest paid on BRI loans. For China: value added by its
+ * contractors abroad plus its own trade gain.
+ */
 function briShare(model: CountryModel, day: number, anchor: number): number {
-  let spending = 0;
+  const time = yearOf(day);
+  const year = Math.floor(time);
+  const { envelope, abroad } = model;
+  let spending = flagshipSpending(model.bri, day);
   let capital = 0;
-  for (const project of model.bri) {
-    if (day >= project.start && day < project.end) spending += project.spendPerYear;
-    if (day >= project.opened) capital += project.costBn;
+  for (const project of model.bri) if (day >= project.opened) capital += project.costBn;
+  let trade = 0;
+  let interest = 0;
+  if (envelope) {
+    spending += spendingBn(envelope, year) * LOCAL_SPENDING_SHARE;
+    const built = capitalBn(envelope, time);
+    capital += built;
+    trade = envelope.tradeGain * reliability(time);
+    interest = envelope.rate * envelope.loanShare * built;
   }
+  const contracts =
+    flagshipSpending(abroad.projects, day) +
+    abroad.envelopes.reduce((sum, e) => sum + spendingBn(e, year), 0);
+  const contractors = contracts * CHINESE_CONTRACTOR_SHARE * CHINESE_VALUE_ADDED;
   const nominal = nominalGdpBn(model.id, anchor);
   const productivity = Math.min(PRODUCTIVITY_CAP, (PRODUCTIVITY_RETURN * capital) / nominal);
-  return Math.min(MAX_BRI_SHARE, (CONSTRUCTION_MULTIPLIER * spending) / nominal + productivity);
+  const share =
+    (CONSTRUCTION_MULTIPLIER * spending + contractors - DEBT_SERVICE_COST * interest) / nominal +
+    productivity +
+    trade;
+  return Math.max(-MAX_BRI_SHARE, Math.min(MAX_BRI_SHARE, share));
 }
 
 const EMPTY_MODEL: CountryModel = {
@@ -171,6 +221,8 @@ const EMPTY_MODEL: CountryModel = {
   gdp: { points: [], growth: 0 },
   population: { points: [], growth: 0 },
   bri: [],
+  envelope: undefined,
+  abroad: { projects: [], envelopes: [] },
 };
 
 function countryModels(content: Content): Record<string, CountryModel> {
@@ -185,6 +237,16 @@ function countryModels(content: Content): Record<string, CountryModel> {
         bri: content.projects
           .filter((project) => project.bri && project.country === country.id)
           .map(buildWindow),
+        envelope: content.bri.find((envelope) => envelope.country === country.id),
+        abroad:
+          country.id === 'CHN'
+            ? {
+                projects: content.projects
+                  .filter((project) => project.bri && project.country !== 'CHN')
+                  .map(buildWindow),
+                envelopes: content.bri.filter((envelope) => envelope.country !== 'CHN'),
+              }
+            : { projects: [], envelopes: [] },
       };
       return [country.id, model];
     }),
@@ -251,7 +313,9 @@ export function createEconomySystem(content: Content): System {
         const previous = baseline(previousAnchor, briShare(model, lastWeek, previousAnchor));
         // The deviation is recovered from last week's GDP, so it needs no extra state.
         const deviation = ctx.week === 0 ? 0 : state.gdp / previous - 1;
-        const drag = growthDrag(state, world, ctx.week);
+        // History already contains sanctions, shocks and debt crises: drags apply after it.
+        const historyEnds = model.gdp.points[model.gdp.points.length - 1]?.day ?? today;
+        const drag = today > historyEnds ? growthDrag(state, world, ctx.week) : 0;
         const next =
           deviation + ((1 + deviation) * drag - ANCHOR_PULL * deviation) / WEEKS_PER_YEAR;
         state.gdp = baseline(anchor, share) * (1 + next);
