@@ -41,7 +41,6 @@ const fakeIo = (manifestSha: string) => {
           sha256: manifestSha,
         },
       ],
-      mapFile: 'ne-110m-countries-trimmed.geojson',
     }),
   };
   const io: PipelineIo = {
