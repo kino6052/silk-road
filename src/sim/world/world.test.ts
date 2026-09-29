@@ -18,6 +18,10 @@ const worldArb: fc.Arbitrary<World> = fc
   .map(({ seed, bri, week }) => Object.assign(make(seed, bri), { week }));
 
 describe('createWorld', () => {
+  it('generates the default sample size unless told otherwise', () => {
+    expect(createWorld(content, { seed: 1, bri: true }).people.length).toBeGreaterThanOrEqual(2000);
+  });
+
   it('generates the same people for both twins', () => {
     const bri = make(4, true);
     expect(bri.people.length).toBeGreaterThanOrEqual(20);

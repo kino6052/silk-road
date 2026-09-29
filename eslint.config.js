@@ -37,7 +37,7 @@ const layerImportBan = (layers, message) => ({
 });
 
 export default tseslint.config(
-  { ignores: ['dist', 'coverage', 'node_modules', 'src/content/generated', 'data'] },
+  { ignores: ['dist', 'coverage', 'node_modules', '.claude', 'src/content/generated', 'data'] },
   js.configs.recommended,
   ...tseslint.configs.strictTypeChecked,
   {
@@ -48,6 +48,10 @@ export default tseslint.config(
   {
     files: ['**/*.js'],
     ...tseslint.configs.disableTypeChecked,
+  },
+  {
+    files: ['**/*.test.ts'],
+    rules: { '@typescript-eslint/no-confusing-void-expression': 'off' },
   },
   {
     files: ['scripts/**/*.js', '*.config.js'],

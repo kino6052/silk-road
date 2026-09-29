@@ -31,5 +31,6 @@ describe('toRecords', () => {
       ]),
     ).toEqual([{ iso: 'KAZ', year: '2013' }]);
     expect(toRecords([])).toEqual([]);
+    expect(toRecords([['a', 'b'], ['1']])).toEqual([{ a: '1', b: '' }]);
   });
 });

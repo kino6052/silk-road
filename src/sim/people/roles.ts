@@ -114,14 +114,17 @@ const SECTOR_ROLES: Readonly<
   ],
 };
 
-const pickWeighted = <T>(rng: Rng, options: readonly (readonly [T, number])[]): T => {
+/** Picks an option with probability proportional to its weight. */
+export const pickWeighted = <T>(rng: Rng, options: readonly (readonly [T, number])[]): T => {
   const total = options.reduce((sum, [, weight]) => sum + weight, 0);
   let roll = rng.float() * total;
-  for (const [option, weight] of options) {
+  const last = options.length - 1;
+  for (let i = 0; i < last; i++) {
+    const [option, weight] = options[i] as readonly [T, number];
     roll -= weight;
     if (roll < 0) return option;
   }
-  return (options[options.length - 1] as readonly [T, number])[0];
+  return (options[last] as readonly [T, number])[0];
 };
 
 /** A working role drawn from the region's sector mix and the jobs its economy allows. */

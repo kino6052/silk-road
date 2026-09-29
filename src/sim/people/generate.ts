@@ -1,9 +1,11 @@
+import { required } from '../../core/required';
 import { createRng, type Rng } from '../../core/rng';
 import type { Content, Culture, Demography, Region } from '../../content/types';
 import {
   NON_WORKING,
   ROLE_INCOME,
   personalFactor,
+  pickWeighted,
   sampleWorkRole,
   storyRoles,
   type RegionFeatures,
@@ -71,15 +73,8 @@ const DEFAULT_DEMOGRAPHY: Demography = {
 export const demographyOf = (content: Content, country: string): Demography =>
   content.demography[country] ?? DEFAULT_DEMOGRAPHY;
 
-const pickCulture = (rng: Rng, region: Region): string => {
-  const groups = Object.entries(region.groups);
-  let roll = rng.float();
-  for (const [culture, share] of groups) {
-    roll -= share;
-    if (roll < 0) return culture;
-  }
-  return (groups[groups.length - 1] as [string, number])[0];
-};
+const pickCulture = (rng: Rng, region: Region): string =>
+  pickWeighted(rng, Object.entries(region.groups));
 
 /** A culture's family name for index `index`, in the form for `sex`. */
 export const familyName = (culture: Culture, index: number, sex: 'f' | 'm'): string =>
@@ -190,19 +185,20 @@ export function generatePopulation(content: Content, seed: number, target: numbe
         landHa: 0,
       };
       households.push(household);
-      const ids = new Map<Member['kind'], number>();
-      for (const member of drawMembers(rng, culture, demography)) {
+      const members = drawMembers(rng, culture, demography);
+      const start = people.length;
+      const parent = (sex: 'f' | 'm') => {
+        const index = members.findIndex(
+          (m) => (m.kind === 'head' || m.kind === 'spouse') && m.sex === sex,
+        );
+        return index < 0 ? null : start + index;
+      };
+      for (const member of members) {
         const id = people.length;
         const education = clamp01(
           demography.education + (rng.float() - 0.5) * 0.4 + (region.urban - 0.5) * 0.2,
         );
         const isChild = member.kind === 'child';
-        const father = isChild
-          ? ids.get(people[ids.get('head') ?? -1]?.sex === 'm' ? 'head' : 'spouse')
-          : undefined;
-        const mother = isChild
-          ? ids.get(people[ids.get('head') ?? -1]?.sex === 'f' ? 'head' : 'spouse')
-          : undefined;
         const person: Person = {
           id,
           household: householdId,
@@ -230,30 +226,27 @@ export function generatePopulation(content: Content, seed: number, target: numbe
             outlook: 0.5,
           },
           spouse: null,
-          mother: mother ?? null,
-          father: father ?? null,
+          mother: isChild ? parent('f') : null,
+          father: isChild ? parent('m') : null,
           log: [],
         };
-        if (!isChild) ids.set(member.kind, id);
         people.push(person);
         regionPeople.push(person);
         household.members.push(id);
       }
-      const head = people[ids.get('head') as number] as Person;
-      const spouseId = ids.get('spouse');
-      if (spouseId !== undefined) {
-        head.spouse = spouseId;
-        (people[spouseId] as Person).spouse = head.id;
+      if (members[1]?.kind === 'spouse') {
+        required(people[start], 'head').spouse = start + 1;
+        required(people[start + 1], 'spouse').spouse = start;
       }
     }
     // Guarantee story roles by re-assigning working adults in non-story roles.
     const wanted = storyRoles(regionFeature);
     for (const role of wanted) {
       if (regionPeople.some((person) => person.role === role)) continue;
-      const candidate = regionPeople.find(
+      const candidates = regionPeople.filter(
         (person) => !NON_WORKING.has(person.role) && !wanted.includes(person.role),
       );
-      if (candidate) candidate.role = role;
+      for (const candidate of candidates.slice(0, 1)) candidate.role = role;
     }
     const income = regionIncome(content, region);
     for (const person of regionPeople) {

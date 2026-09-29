@@ -67,12 +67,14 @@ export const fixtureContent = (): Content => ({
   regions: [
     region('AAA-ONE', { urban: 1, income: 2 }),
     region('AAA-REST', { groups: { han: 0.5, rus: 0.5 } }),
+    region('AAA-TWO', { income: 0.5, population: 0.5 }),
     region('BBB-REST', { groups: { rus: 1 } }),
   ],
   cultures: [culture('han', false), culture('rus', true)],
   nodes: [
     { id: 'a', kind: 'city', country: 'AAA', region: 'AAA-ONE', lat: 40, lon: 70, ...sourced },
     { id: 'b', kind: 'port', country: 'BBB', region: 'BBB-REST', lat: 41, lon: 72, ...sourced },
+    { id: 'c', kind: 'border', country: 'AAA', region: 'AAA-TWO', lat: 42, lon: 71, ...sourced },
   ],
   links: [
     {
@@ -142,7 +144,10 @@ export const fixtureContent = (): Content => ({
     },
   ],
   events: [],
-  demography: { AAA: demography, BBB: { ...demography, householdSize: 6, retirementAge: 65 } },
+  demography: {
+    AAA: { ...demography, householdSize: 3 },
+    BBB: { ...demography, householdSize: 6, retirementAge: 65 },
+  },
   indicators: {
     AAA: { 2013: { population: 5e6, gdp: 50e9, co2: 30, co2PerCapita: 6, coalCo2: 10 } },
     BBB: { 2013: { population: 2e6, gdp: 10e9, co2: null, co2PerCapita: null, coalCo2: null } },

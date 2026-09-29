@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { createPipeline, stepWorld } from '../engine/engine';
 import { fixtureContent } from '../testing/content.fixture';
 import { createWorld, type World } from '../world/world';
-import { createLifecycleSystem } from './lifecycle';
+import { createLifecycleSystem, LOG_LIMIT, record } from './lifecycle';
+import type { Person } from './types';
 
 const content = fixtureContent();
 const pipeline = createPipeline([createLifecycleSystem(content)]);
@@ -93,6 +94,28 @@ describe('lifecycle system', () => {
     expect(world.people.some((p) => p.birthRegion === 'AAA-REST' && p.region === 'AAA-ONE')).toBe(
       true,
     );
+  });
+
+  it('lays people off faster during a pandemic', () => {
+    const pandemic = run(260, (w) => {
+      w.effects.push({
+        source: 'test',
+        effect: { kind: 'pandemic', severity: 1, weeks: 999 },
+        untilWeek: 1e9,
+      });
+    });
+    expect(logged(pandemic, 'job-lost').length).toBeGreaterThan(
+      logged(run(260), 'job-lost').length,
+    );
+  });
+
+  it('keeps only the most recent life events', () => {
+    const person = tenYears.people[0];
+    if (!person) throw new Error('no people');
+    const copy: Person = { ...person, log: [] };
+    for (let week = 0; week < LOG_LIMIT + 3; week++) record(copy, week, 'moved', 'x');
+    expect(copy.log).toHaveLength(LOG_LIMIT);
+    expect(copy.log[0]?.week).toBe(3);
   });
 
   it('is deterministic', () => {

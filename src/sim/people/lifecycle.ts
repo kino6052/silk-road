@@ -1,6 +1,7 @@
 import { exp } from '../../core/fixed-math';
+import { required } from '../../core/required';
 import type { Rng } from '../../core/rng';
-import type { Content, Culture, Region } from '../../content/types';
+import type { Content, Region } from '../../content/types';
 import type { System } from '../engine/engine';
 import type { World } from '../world/world';
 import {
@@ -16,7 +17,7 @@ import type { LifeEvent, LifeEventKind, Person } from './types';
 
 /** Each person is updated once every four weeks, staggered by id. */
 export const MONTH_WEEKS = 4;
-const LOG_LIMIT = 12;
+export const LOG_LIMIT = 12;
 const MONTHLY_MARRIAGE = 0.012;
 const MONTHLY_MIGRATION = 0.01;
 /** Displacement is rare in a 2,000-person sample; over-sample it so stories exist. */
@@ -50,8 +51,8 @@ export function createLifecycleSystem(content: Content): System {
   const die = (world: World, person: Person) => {
     person.deathWeek = world.week;
     record(person, world.week, 'died', person.region);
-    const household = world.households[person.household];
-    if (household) household.members = household.members.filter((id) => id !== person.id);
+    const household = required(world.households[person.household], 'household');
+    household.members = household.members.filter((id) => id !== person.id);
     const spouse = person.spouse === null ? undefined : world.people[person.spouse];
     if (spouse) {
       spouse.spouse = null;
@@ -61,10 +62,9 @@ export function createLifecycleSystem(content: Content): System {
   };
 
   const moveTo = (world: World, person: Person, householdId: number) => {
-    const old = world.households[person.household];
-    if (old) old.members = old.members.filter((id) => id !== person.id);
-    const target = world.households[householdId];
-    if (!target) return;
+    const old = required(world.households[person.household], 'household');
+    old.members = old.members.filter((id) => id !== person.id);
+    const target = required(world.households[householdId], 'household');
     target.members.push(person.id);
     person.household = householdId;
     person.region = target.region;
@@ -86,19 +86,16 @@ export function createLifecycleSystem(content: Content): System {
         household.wealth += household.landHa * 5000;
         household.landHa = 0;
         for (const id of household.members) {
-          const member = world.people[id];
-          if (member) record(member, world.week, 'displaced', region.id);
+          record(required(world.people[id], 'person'), world.week, 'displaced', region.id);
         }
       }
     }
   };
 
   const work = (world: World, person: Person, rng: Rng, region: Region, age: number) => {
-    const state = world.regions[person.region];
-    if (!state) return;
+    const state = required(world.regions[person.region], 'region state');
     const demography = demographyOf(content, region.country);
-    const regionFeature = features.get(region.id);
-    if (!regionFeature) return;
+    const regionFeature = required(features.get(region.id), 'region features');
     if (person.role === 'child' && age >= 6) person.role = 'student';
     else if (person.role === 'student' && age >= 18 && (age >= 22 || rng.chance(0.3))) {
       person.role = adultRole(rng, age, person.sex, 0, region, regionFeature, demography);
@@ -136,8 +133,7 @@ export function createLifecycleSystem(content: Content): System {
     age: number,
   ) => {
     if (person.spouse !== null || age < 20 || age > 40 || !rng.chance(MONTHLY_MARRIAGE)) return;
-    const pool = singles.get(person.region) ?? [];
-    const partner = pool.find(
+    const partner = required(singles.get(person.region), 'singles').find(
       (other) =>
         other.id !== person.id &&
         other.spouse === null &&
@@ -149,22 +145,22 @@ export function createLifecycleSystem(content: Content): System {
     person.spouse = partner.id;
     partner.spouse = person.id;
     const [husband, wife] = person.sex === 'm' ? [person, partner] : [partner, person];
-    const culture = cultures.get(wife.culture);
-    const index = culture?.familyNames.indexOf(husband.family) ?? -1;
-    if (culture?.familyNamesFemale && index >= 0) wife.family = familyName(culture, index, 'f');
+    const culture = required(cultures.get(wife.culture), 'culture');
+    if (culture.familyNamesFemale) {
+      wife.family = familyName(culture, culture.familyNames.indexOf(husband.family), 'f');
+    }
     moveTo(world, wife, husband.household);
     record(person, world.week, 'married', String(partner.id));
     record(partner, world.week, 'married', String(person.id));
   };
 
-  const giveBirth = (world: World, mother: Person, rng: Rng, age: number) => {
+  const giveBirth = (world: World, mother: Person, rng: Rng, age: number): boolean => {
     const father = mother.spouse === null ? undefined : world.people[mother.spouse];
-    if (mother.sex !== 'f' || !father || age < 18 || age > 45) return;
-    const demography = demographyOf(content, regions.get(mother.region)?.country ?? '');
-    if (!rng.chance(demography.fertility / 27 / 12)) return;
-    const culture = cultures.get(mother.culture) as Culture;
+    if (mother.sex !== 'f' || !father || age < 18 || age > 45) return false;
+    const region = required(regions.get(mother.region), 'region');
+    if (!rng.chance(demographyOf(content, region.country).fertility / 27 / 12)) return false;
+    const culture = required(cultures.get(mother.culture), 'culture');
     const sex = rng.chance(0.5) ? 'f' : 'm';
-    const index = culture.familyNames.indexOf(father.family);
     const baby: Person = {
       id: world.people.length,
       household: mother.household,
@@ -175,10 +171,10 @@ export function createLifecycleSystem(content: Content): System {
       birthWeek: world.week,
       deathWeek: null,
       given: givenName(rng, culture, sex),
-      family: index >= 0 ? familyName(culture, index, sex) : father.family,
+      family: familyName(culture, culture.familyNames.indexOf(father.family), sex),
       role: 'child',
       income: 0,
-      education: demography.education,
+      education: demographyOf(content, region.country).education,
       genes: rng.next(),
       traits: randomTraits(rng),
       wellbeing: {
@@ -195,42 +191,40 @@ export function createLifecycleSystem(content: Content): System {
       log: [],
     };
     world.people.push(baby);
-    world.households[mother.household]?.members.push(baby.id);
+    required(world.households[mother.household], 'household').members.push(baby.id);
     record(mother, world.week, 'child-born', String(baby.id));
     record(father, world.week, 'child-born', String(baby.id));
-    world.stats['people.births'] = (world.stats['people.births'] ?? 0) + 1;
+    return true;
   };
 
   const migrate = (world: World, person: Person, rng: Rng, region: Region, age: number) => {
-    if (age < 18 || age > 45 || (person.role !== 'unemployed' && person.wellbeing.income >= 0.3))
-      return;
+    if (age < 18 || age > 45) return;
+    if (person.role !== 'unemployed' && person.wellbeing.income >= 0.3) return;
     if (!rng.chance(MONTHLY_MIGRATION)) return;
     const score = (id: string) => {
-      const state = world.regions[id];
-      return state ? state.income * (1 - state.unemployment) : 0;
+      const state = required(world.regions[id], 'region state');
+      return state.income * (1 - state.unemployment);
     };
-    const target = content.regions
-      .filter((other) => other.country === region.country && other.id !== region.id)
-      .reduce<Region | undefined>(
-        (best, other) => (!best || score(other.id) > score(best.id) ? other : best),
-        undefined,
-      );
+    let target: Region | undefined;
+    for (const other of content.regions) {
+      if (other.country !== region.country || other.id === region.id) continue;
+      if (!target || score(other.id) > score(target.id)) target = other;
+    }
     if (!target || score(target.id) <= 1.1 * score(region.id)) return;
-    const old = world.households[person.household];
+    const old = required(world.households[person.household], 'household');
     const householdId = world.households.length;
-    const wealth = (old?.wealth ?? 0) / 2;
-    if (old) old.wealth -= wealth;
+    const wealth = old.wealth / 2;
+    old.wealth -= wealth;
     world.households.push({ id: householdId, region: target.id, members: [], wealth, landHa: 0 });
-    const followers = [person.spouse, ...(old?.members ?? [])]
-      .map((id) => (id === null ? undefined : world.people[id]))
+    const followers = old.members
+      .map((id) => required(world.people[id], 'person'))
       .filter(
-        (other): other is Person =>
-          other !== undefined &&
-          (other.id === person.spouse ||
-            ((other.mother === person.id || other.father === person.id) &&
-              ageAt(other, world.week) < 18)),
+        (other) =>
+          other.id === person.spouse ||
+          ((other.mother === person.id || other.father === person.id) &&
+            ageAt(other, world.week) < 18),
       );
-    for (const mover of [person, ...new Set(followers)]) {
+    for (const mover of [person, ...followers]) {
       moveTo(world, mover, householdId);
       record(mover, world.week, 'moved', target.id);
     }
@@ -239,8 +233,7 @@ export function createLifecycleSystem(content: Content): System {
   return {
     id: 'lifecycle',
     step: (world, ctx) => {
-      world.stats['people.births'] = 0;
-      displace(world, ctx.rng);
+      displace(world, (entity, purpose) => ctx.rng(entity, purpose));
       const singles = new Map<string, Person[]>();
       for (const person of world.people) {
         if (person.deathWeek !== null || person.spouse !== null) continue;
@@ -251,12 +244,12 @@ export function createLifecycleSystem(content: Content): System {
         singles.set(person.region, list);
       }
       let deaths = 0;
+      let births = 0;
       const count = world.people.length;
       for (let id = 0; id < count; id++) {
-        const person = world.people[id] as Person;
+        const person = required(world.people[id], 'person');
         if (person.deathWeek !== null || !isDue(person, world.week)) continue;
-        const region = regions.get(person.region);
-        if (!region) continue;
+        const region = required(regions.get(person.region), 'region');
         const rng = ctx.rng(person.id);
         const age = ageAt(person, world.week);
         const demography = demographyOf(content, region.country);
@@ -267,13 +260,12 @@ export function createLifecycleSystem(content: Content): System {
         }
         work(world, person, rng, region, age);
         marry(world, person, rng, singles, age);
-        giveBirth(world, person, rng, age);
+        if (giveBirth(world, person, rng, age)) births++;
         migrate(world, person, rng, region, age);
       }
+      world.stats['people.births'] = births;
       world.stats['people.deaths'] = deaths;
-      world.stats['people.alive'] = world.people.filter(
-        (person) => person.deathWeek === null,
-      ).length;
+      world.stats['people.alive'] = world.people.filter((p) => p.deathWeek === null).length;
     },
   };
 }

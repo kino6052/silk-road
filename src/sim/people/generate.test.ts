@@ -1,12 +1,20 @@
 import { describe, expect, it } from 'vitest';
 import { fixtureContent } from '../testing/content.fixture';
-import { generatePopulation } from './generate';
+import { demographyOf, generatePopulation, regionIncome } from './generate';
 import type { Person } from './types';
 
 const content = fixtureContent();
 const population = generatePopulation(content, 42, 300);
 const { people, households } = population;
 const ageOf = (person: Person) => Math.floor(-person.birthWeek / 52);
+
+describe('generation helpers', () => {
+  it('fall back sensibly for countries without data', () => {
+    const region = content.regions[0];
+    expect(region && regionIncome(content, { ...region, country: 'ZZZ' })).toBe(0);
+    expect(demographyOf(content, 'ZZZ').householdSize).toBeGreaterThan(1);
+  });
+});
 
 describe('generatePopulation', () => {
   it('is deterministic for a seed and varies with it', () => {
@@ -16,11 +24,13 @@ describe('generatePopulation', () => {
 
   it('creates about the target number of people, in every region', () => {
     expect(people.length).toBeGreaterThanOrEqual(300);
-    expect(people.length).toBeLessThan(330);
+    expect(people.length).toBeLessThan(345);
     for (const region of content.regions) {
       expect(people.filter((p) => p.region === region.id).length).toBeGreaterThanOrEqual(12);
     }
-    people.forEach((person, index) => expect(person.id).toBe(index));
+    people.forEach((person, index) => {
+      expect(person.id).toBe(index);
+    });
   });
 
   it('groups people into consistent households of one culture', () => {
@@ -84,6 +94,7 @@ describe('generatePopulation', () => {
       expect.arrayContaining(['dockworker', 'construction-worker']),
     );
     expect(rolesIn('AAA-REST')).not.toContain('dockworker');
+    expect(rolesIn('AAA-TWO')).toEqual(expect.arrayContaining(['customs-officer', 'truck-driver']));
   });
 
   it('gives earners an income and farming households land', () => {

@@ -1,4 +1,5 @@
 import { dateToWeek } from '../../core/calendar';
+import { required } from '../../core/required';
 import type { Content, Project } from '../../content/types';
 import type { System } from '../engine/engine';
 import type { ProjectStatus } from '../world/state';
@@ -44,8 +45,7 @@ export function createProjectsSystem(content: Content): System {
         counts[state.status] = (counts[state.status] ?? 0) + 1;
         if (state.status !== 'operating') continue;
         for (const linkId of project.opensLinks) {
-          const link = world.links[linkId];
-          if (link) link.open = true;
+          required(world.links[linkId], `link ${linkId}`).open = true;
         }
       }
       world.stats['projects.construction'] = counts.construction ?? 0;

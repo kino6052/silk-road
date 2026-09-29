@@ -1,7 +1,8 @@
 import { canonicalJson } from '../../core/canonical-json';
 import { hashString } from '../../core/hash';
+import { required } from '../../core/required';
 import type { Content, Country, Region } from '../../content/types';
-import { generatePopulation, PEOPLE_PER_WORLD } from '../people/generate';
+import { generatePopulation, PEOPLE_PER_WORLD, regionIncome } from '../people/generate';
 import type { Household, Person } from '../people/types';
 import type {
   ActiveEffect,
@@ -73,13 +74,11 @@ function countryState(country: Country, content: Content): CountryState {
   };
 }
 
-function regionState(
-  region: Region,
-  countries: Record<string, CountryState>,
-  pm25: number,
-): RegionState {
-  const country = countries[region.country];
-  const gdpPerPerson = country && country.population > 0 ? country.gdp / country.population : 0;
+function regionState(region: Region, content: Content): RegionState {
+  const country = required(
+    content.countries.find((c) => c.id === region.country),
+    'country',
+  );
   const population = region.population * 1e6;
   const employed = population * LABOUR_PARTICIPATION * (1 - INITIAL_UNEMPLOYMENT);
   return {
@@ -94,8 +93,8 @@ function regionState(
       logistics: 0,
     },
     unemployment: INITIAL_UNEMPLOYMENT,
-    income: gdpPerPerson * region.income,
-    pollution: pm25 * (0.7 + 0.6 * region.urban),
+    income: regionIncome(content, region),
+    pollution: country.pm25 * (0.7 + 0.6 * region.urban),
     landTakenHa: 0,
     displaced: 0,
     security: 0.8,
@@ -106,13 +105,12 @@ function regionState(
 
 export function createWorld(content: Content, { seed, bri, people }: WorldOptions): World {
   const countries = byId(content.countries.map((country) => countryState(country, content)));
-  const pm25 = Object.fromEntries(content.countries.map((c) => [c.id, c.pm25]));
   return {
     seed,
     bri,
     week: 0,
     countries,
-    regions: byId(content.regions.map((r) => regionState(r, countries, pm25[r.country] ?? 0))),
+    regions: byId(content.regions.map((region) => regionState(region, content))),
     projects: byId(
       content.projects
         .filter((project) => bri || !project.bri)

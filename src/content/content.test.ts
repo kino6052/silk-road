@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { en } from '../i18n/en';
 import { COUNTRIES } from './countries';
 import { CULTURES } from './cultures';
+import { DEMOGRAPHY } from './demography';
 import { REGIONS } from './regions';
 
 const catalog: Record<string, string> = en;
@@ -38,6 +39,18 @@ describe('countries', () => {
       expect(unit(country.pressFreedom) && unit(country.corruption), country.id).toBe(true);
       expect(country.source, country.id).not.toBe('');
       expect(catalog[`country.${country.id}`], country.id).toBeTruthy();
+    }
+  });
+});
+
+describe('demography', () => {
+  it('covers every corridor country with plausible values', () => {
+    for (const country of COUNTRIES.filter((c) => c.role === 'corridor')) {
+      const row = DEMOGRAPHY[country.id];
+      expect(row, country.id).toBeDefined();
+      expect(row?.householdSize).toBeGreaterThan(1.5);
+      expect(row?.lifeExpectancy).toBeGreaterThan(60);
+      expect(unit(row?.homemakerShare ?? -1) && unit(row?.education ?? -1)).toBe(true);
     }
   });
 });

@@ -17,6 +17,10 @@ export default defineConfig({
     include: ['src/**/*.test.ts', 'pipeline/**/*.test.ts', 'tests/**/*.test.ts'],
     // The whole suite must finish within 2 s (scripts/time-budget-reporter.js).
     reporters: ['default', './scripts/time-budget-reporter.js'],
+    // Tests build their own fixtures and share no mutable module state, so files can reuse
+    // imported modules; this keeps the whole suite inside the 2 s budget.
+    pool: 'threads',
+    isolate: false,
     coverage: {
       provider: 'v8',
       include: ['src/**/*.ts', 'pipeline/**/*.ts'],

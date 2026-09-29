@@ -1,4 +1,5 @@
 import { dateToWeek } from '../../core/calendar';
+import { required } from '../../core/required';
 import type { Content, EventEffect, HistoricalEvent } from '../../content/types';
 import type { System } from '../engine/engine';
 import type { World } from '../world/world';
@@ -30,38 +31,36 @@ function durationOf(effect: EventEffect): number | undefined {
 function applyToState(world: World, effect: EventEffect): void {
   switch (effect.kind) {
     case 'sanctions': {
-      const target = world.countries[effect.target];
-      if (target) target.sanctions = Math.max(target.sanctions, effect.severity);
+      const target = required(world.countries[effect.target], 'country');
+      target.sanctions = Math.max(target.sanctions, effect.severity);
       return;
     }
     case 'sanctions-eased': {
-      const target = world.countries[effect.target];
-      if (target) target.sanctions /= 2;
+      const target = required(world.countries[effect.target], 'country');
+      target.sanctions /= 2;
       return;
     }
     case 'conflict': {
-      const country = world.countries[effect.country];
-      if (country) country.stability = Math.max(0, country.stability - effect.severity);
+      const country = required(world.countries[effect.country], 'country');
+      country.stability = Math.max(0, country.stability - effect.severity);
       return;
     }
     case 'bloc-join':
     case 'bloc-leave': {
-      const country = world.countries[effect.country];
-      if (!country) return;
+      const country = required(world.countries[effect.country], 'country');
       country.blocs = country.blocs.filter((bloc) => bloc !== effect.bloc);
       if (effect.kind === 'bloc-join') country.blocs.push(effect.bloc);
       return;
     }
     case 'imf-program': {
-      const country = world.countries[effect.country];
-      if (!country) return;
+      const country = required(world.countries[effect.country], 'country');
       country.imfProgram = true;
       country.externalDebt += effect.amountBn;
       return;
     }
     case 'debt-distress': {
-      const country = world.countries[effect.country];
-      if (country) country.debtDistress = Math.max(country.debtDistress, effect.severity);
+      const country = required(world.countries[effect.country], 'country');
+      country.debtDistress = Math.max(country.debtDistress, effect.severity);
       return;
     }
     case 'policy': {
@@ -71,7 +70,7 @@ function applyToState(world: World, effect: EventEffect): void {
       return;
     }
     case 'bri-membership':
-      world.stats[`timeline.briMember.${effect.country}`] = effect.joined ? 1 : 0;
+      world.stats[`timeline.briMember.${effect.country}`] = Number(effect.joined);
       return;
     default:
       return;

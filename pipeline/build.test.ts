@@ -25,7 +25,9 @@ const fakeIo = (manifestSha: string) => {
   const io: PipelineIo = {
     readText: (path) => files[path] ?? '',
     readBytes: (path) => new TextEncoder().encode(files[path] ?? ''),
-    writeText: (path, text) => written.set(path, text),
+    writeText: (path, text) => {
+      written.set(path, text);
+    },
   };
   return { io, written };
 };
@@ -34,8 +36,10 @@ describe('runPipeline', () => {
   it('verifies the manifest and writes generated indicators', () => {
     const { io, written } = fakeIo(createHash('sha256').update(csv).digest('hex'));
     runPipeline(io);
-    const indicators = JSON.parse(written.get('src/content/generated/indicators.json') ?? '{}');
-    expect(indicators.GRC['2013'].population).toBe(11e6);
+    const indicators = JSON.parse(
+      written.get('src/content/generated/indicators.json') ?? '{}',
+    ) as Record<string, Record<string, { population: number }>>;
+    expect(indicators.GRC?.['2013']?.population).toBe(11e6);
   });
 
   it('refuses to run when the manifest check fails', () => {
