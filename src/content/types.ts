@@ -68,6 +68,8 @@ export interface Culture {
   readonly nameOrder: 'family-first' | 'given-first';
   readonly givenNames: { readonly female: readonly string[]; readonly male: readonly string[] };
   readonly familyNames: readonly string[];
+  /** Female forms of familyNames, same order. */
+  readonly familyNamesFemale?: readonly string[];
 }
 
 export type Climate =
