@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { civilFromDays, daysFromCivil, weekToDate, type CivilDate } from '../../core/calendar';
 import { pow } from '../../core/fixed-math';
-import type { Content, Country, IndicatorYear, Project } from '../../content/types';
+import type { BriEnvelope, Content, Country, IndicatorYear, Project } from '../../content/types';
 import { createPipeline, createTwins, stepTwins, stepWorld } from '../engine/engine';
 import { fixtureContent } from '../testing/content.fixture';
 import type { ActiveEffect, CountryState } from '../world/state';
@@ -178,5 +178,48 @@ describe('economy system', () => {
       return [stateHash(twins.bri), stateHash(twins.shadow)];
     };
     expect(hashes()).toEqual(hashes());
+  });
+});
+
+describe('the Belt and Road beyond flagship projects', () => {
+  const withBri = fixtureContent();
+  const model = createEconomyModel(withBri);
+  const d = (year: number, month: number, day: number): CivilDate => ({ year, month, day });
+
+  it('adds construction, capital and a growing trade gain for host countries', () => {
+    const early = model.briContribution('AAA', d(2015, 1, 5));
+    const later = model.briContribution('AAA', d(2022, 1, 3));
+    const future = model.briContribution('AAA', d(2032, 1, 5));
+    expect(early).toBeGreaterThan(0);
+    expect(later).toBeGreaterThan(early);
+    expect(future).toBeGreaterThan(later);
+    expect(model.briContribution('BBB', d(2022, 1, 3))).toBe(0);
+  });
+
+  it('gives China gains from contractor work abroad and from trade', () => {
+    const china = createEconomyModel({
+      ...withBri,
+      countries: [...withBri.countries, { ...(withBri.countries[0] as Country), id: 'CHN' }],
+      indicators: { ...withBri.indicators, CHN: withBri.indicators.AAA ?? {} },
+      bri: [
+        ...withBri.bri,
+        { ...(withBri.bri[0] as BriEnvelope), country: 'CHN', totalBn: 0, tradeGain: 0.004 },
+      ],
+    });
+    expect(china.briContribution('CHN', d(2017, 1, 2))).toBeGreaterThan(0);
+    expect(china.briContribution('CHN', d(2030, 1, 7))).toBeGreaterThan(
+      china.briContribution('CHN', d(2017, 1, 2)),
+    );
+  });
+
+  it('keeps the BRI world on history and puts the shadow world visibly below it', () => {
+    const pipeline = createPipeline([createEconomySystem(withBri)]);
+    const run = (bri: boolean) => {
+      const world = createWorld(withBri, { seed: 1, bri, people: 0 });
+      for (let i = 0; i < 400; i++) stepWorld(world, pipeline);
+      return world.countries.AAA as CountryState;
+    };
+    const gap = run(true).gdp / run(false).gdp - 1;
+    expect(gap).toBeGreaterThan(0.02);
   });
 });

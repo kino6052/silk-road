@@ -108,3 +108,17 @@ describe('regions', () => {
     expect(population('DEU')).toBeCloseTo(80.6, 0);
   });
 });
+
+describe('belt and road envelopes', () => {
+  it('cover the corridor countries and China with plausible values and sources', async () => {
+    const { BRI_ENVELOPES } = await import('./bri');
+    const ids = BRI_ENVELOPES.map((e) => e.country);
+    for (const id of ['CHN', 'PAK', 'KAZ', 'UZB', 'RUS', 'EGY']) expect(ids).toContain(id);
+    for (const envelope of BRI_ENVELOPES) {
+      expect(envelope.totalBn, envelope.country).toBeGreaterThanOrEqual(0);
+      expect(unit(envelope.loanShare) && unit(envelope.tradeGain)).toBe(true);
+      expect(envelope.rate).toBeLessThan(0.1);
+      expect(envelope.source).not.toBe('');
+    }
+  });
+});

@@ -251,4 +251,25 @@ describe('economy and finance together', () => {
     };
     expect(hashes()).toEqual(hashes());
   });
+
+  it('books yearly Belt and Road loans from China in the BRI world only', () => {
+    const withBri = fixtureContent();
+    const pipeline = createPipeline([createEconomySystem(withBri), createFinanceSystem(withBri)]);
+    const run = (bri: boolean) => {
+      const world = createWorld(withBri, { seed: 1, bri, people: 0 });
+      for (let i = 0; i < 260; i++) stepWorld(world, pipeline);
+      return world;
+    };
+    const bri = run(true);
+    const envelopeLoans = bri.loans.filter((loan) => loan.id.startsWith('bri:AAA:'));
+    expect(envelopeLoans.map((loan) => loan.id)).toEqual([
+      'bri:AAA:2014',
+      'bri:AAA:2015',
+      'bri:AAA:2016',
+      'bri:AAA:2017',
+      'bri:AAA:2018',
+    ]);
+    expect(bri.countries.AAA?.chinaDebt).toBeGreaterThan(2);
+    expect(run(false).loans.some((loan) => loan.id.startsWith('bri:'))).toBe(false);
+  });
 });

@@ -144,6 +144,16 @@ export const fixtureContent = (): Content => ({
     },
   ],
   events: [],
+  bri: [
+    {
+      country: 'AAA',
+      totalBn: 10,
+      loanShare: 0.5,
+      rate: 0.03,
+      tradeGain: 0.03,
+      ...sourced,
+    },
+  ],
   demography: {
     AAA: { ...demography, householdSize: 3 },
     BBB: { ...demography, householdSize: 6, retirementAge: 65 },

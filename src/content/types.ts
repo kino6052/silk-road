@@ -294,6 +294,23 @@ export interface Demography {
   readonly lifeExpectancy: number;
 }
 
+/**
+ * The Belt and Road in one country beyond the flagship projects listed individually:
+ * Chinese construction contracts and investment 2013–2023, how much of it was lent,
+ * and the trade-cost gain the corridors bring once the network is reliable.
+ */
+export interface BriEnvelope extends Sourced {
+  readonly country: string;
+  /** USD billions, 2013–2023, excluding the flagship projects in content. */
+  readonly totalBn: number;
+  /** Share financed by loans from Chinese lenders, 0–1. */
+  readonly loanShare: number;
+  /** Average annual interest rate on those loans. */
+  readonly rate: number;
+  /** Real income gain from lower trade costs once the corridors are fully reliable (share of GDP). */
+  readonly tradeGain: number;
+}
+
 /** Everything static the simulation is built from. */
 export interface Content {
   readonly countries: readonly Country[];
@@ -305,4 +322,5 @@ export interface Content {
   readonly events: readonly HistoricalEvent[];
   readonly indicators: Indicators;
   readonly demography: Readonly<Record<string, Demography>>;
+  readonly bri: readonly BriEnvelope[];
 }

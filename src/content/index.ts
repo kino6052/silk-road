@@ -1,3 +1,4 @@
+import { BRI_ENVELOPES } from './bri';
 import { COUNTRIES } from './countries';
 import { CULTURES } from './cultures';
 import { DEMOGRAPHY } from './demography';
@@ -19,4 +20,5 @@ export const CONTENT: Content = {
   events: EVENTS,
   indicators: indicators,
   demography: DEMOGRAPHY,
+  bri: BRI_ENVELOPES,
 };
