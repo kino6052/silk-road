@@ -15,7 +15,8 @@ cycles (see `CLAUDE.md`). A milestone is done when all of these hold:
   `src/view/**` excluded), `fast-check`, ESLint (import boundaries, determinism bans in
   `sim/`), Prettier.
 - `npm run verify` runs lint, typecheck, tests with coverage, and build. A pre-push hook runs it.
-- GitHub Actions: verify on every push and pull request; deploy to GitHub Pages from `main`.
+- GitHub Actions: verify on every push and pull request; every green push to the default
+  branch deploys to GitHub Pages.
 - `LICENSE` (MIT) and `LICENSE-DATA` (CC BY 4.0).
 - First TDD cycles: counter-based seeded RNG, and the calendar (week ↔ date, from 2013-09-02).
 

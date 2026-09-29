@@ -7,7 +7,9 @@ Read `docs/DESIGN.md` (what we build and why) and `docs/ROADMAP.md` (the order w
 For every behaviour:
 
 1. 🔴 **Red.** Write one failing test for the next small behaviour. Run it and confirm it
-   fails _for the expected reason_ (not a typo or import error). Commit:
+   fails _for the expected reason_ (not a typo or import error). For a brand-new
+   function, the red commit may add a signature stub that throws `not implemented`, so the
+   test fails on behaviour rather than on a missing import. Commit:
    `test(red): <area> — <behaviour>`
 2. 🟢 **Green.** Write the minimum code that makes the test pass, with all other tests
    still green. Commit: `feat(green): <area> — <behaviour>` (or `fix(green): …`).
@@ -17,7 +19,7 @@ For every behaviour:
 
 Red commits fail their tests on purpose, so no commit hook blocks failing tests.
 Push only after a green or blue commit. The pre-push hook and CI run `npm run verify`
-on the pushed tip.
+on the pushed tip, and every green push to the default branch deploys to GitHub Pages.
 
 ## Coverage: 100% of logic, 0% of view
 
