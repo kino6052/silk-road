@@ -1,1 +1,22 @@
-{}
+{
+  "country.CHN": "China",
+  "country.KAZ": "Kazakhstan",
+  "country.UZB": "Uzbekistan",
+  "country.RUS": "Russia",
+  "country.BLR": "Belarus",
+  "country.POL": "Poland",
+  "country.DEU": "Germany",
+  "country.AZE": "Azerbaijan",
+  "country.TUR": "Türkiye",
+  "country.IRN": "Iran",
+  "country.PAK": "Pakistan",
+  "country.EGY": "Egypt",
+  "country.GRC": "Greece",
+  "country.USA": "United States",
+  "country.EU": "European Union",
+  "country.IND": "India",
+  "country.JPN": "Japan",
+  "country.SAU": "Saudi Arabia",
+  "country.ARE": "United Arab Emirates",
+  "country.GBR": "United Kingdom"
+}
