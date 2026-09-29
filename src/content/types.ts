@@ -1,3 +1,5 @@
+import type { CivilDate } from '../core/calendar';
+
 /** Where a value comes from. Shown to players as a badge. */
 export type Provenance = 'historical' | 'estimated' | 'simulated';
 
@@ -84,4 +86,170 @@ export interface Region extends Sourced {
     readonly industry: number;
     readonly services: number;
   };
+}
+
+// ── Route network ────────────────────────────────────────────────────────────
+
+export type NodeKind = 'city' | 'port' | 'dry-port' | 'border' | 'chokepoint';
+
+export interface RouteNode extends Sourced {
+  readonly id: string;
+  readonly kind: NodeKind;
+  /** ISO3. May be a transit country outside the 13 + 7 (e.g. GEO, TKM, SGP). */
+  readonly country: string;
+  /** Content region id for nodes in corridor countries, otherwise null. */
+  readonly region: string | null;
+  readonly lat: number;
+  readonly lon: number;
+}
+
+export type Mode = 'rail' | 'road' | 'sea' | 'pipeline';
+
+export interface RouteLink extends Sourced {
+  /** `${from}~${to}~${mode}` */
+  readonly id: string;
+  readonly from: string;
+  readonly to: string;
+  readonly mode: Mode;
+  readonly km: number;
+  /** Operating in September 2013. Links built later by projects start closed. */
+  readonly open: boolean;
+  /** Relative capacity; 1 = a typical double-track mainline or a major shipping lane. */
+  readonly capacity: number;
+  /** Extra handling time in hours (border checks, gauge change, transshipment). */
+  readonly handlingHours: number;
+}
+
+// ── Projects ─────────────────────────────────────────────────────────────────
+
+export type ProjectKind =
+  | 'rail'
+  | 'road'
+  | 'port'
+  | 'dry-port'
+  | 'power-coal'
+  | 'power-hydro'
+  | 'power-solar'
+  | 'power-wind'
+  | 'power-nuclear'
+  | 'pipeline'
+  | 'lng'
+  | 'industrial-zone'
+  | 'urban'
+  | 'metro';
+
+export interface Project extends Sourced {
+  readonly id: string;
+  readonly kind: ProjectKind;
+  readonly country: string;
+  readonly region: string;
+  /** Belt and Road project: removed from the no-BRI shadow world. */
+  readonly bri: boolean;
+  /** Main backer: a country id (e.g. 'CHN', 'JPN', 'EU') or an organisation id. */
+  readonly sponsor: string;
+  /** Organisation ids, e.g. 'china-exim', 'cdb', 'aiib', 'silk-road-fund', 'world-bank'. */
+  readonly lenders: readonly string[];
+  /** USD billions. */
+  readonly costBn: number;
+  readonly loanBn: number;
+  /** Annual interest rate on the loan, e.g. 0.02 for 2%. */
+  readonly interestRate: number;
+  readonly announced: CivilDate;
+  readonly constructionStart: CivilDate;
+  /** Historical opening date; absent when not operating by the data cutoff. */
+  readonly opened?: CivilDate;
+  readonly jobs: {
+    readonly construction: number;
+    readonly operation: number;
+    /** Share of jobs held by local (non-Chinese) workers, 0–1. */
+    readonly localShare: number;
+  };
+  readonly co2KtPerYear: number;
+  readonly landHa: number;
+  readonly displacedPeople: number;
+  /** Route link ids this project opens when it starts operating. */
+  readonly opensLinks: readonly string[];
+}
+
+// ── Historical events ────────────────────────────────────────────────────────
+
+export type Hazard = 'flood' | 'drought' | 'heatwave' | 'earthquake';
+
+export type Policy =
+  | 'silk-road-fund'
+  | 'aiib'
+  | 'green-bri'
+  | 'no-new-coal-abroad'
+  | 'small-and-beautiful'
+  | 'uflpa-import-ban'
+  | 'export-controls'
+  | 'b3w'
+  | 'pgii'
+  | 'global-gateway'
+  | 'imec'
+  | 'quality-infrastructure'
+  | 'debt-renegotiation'
+  | 'capital-controls';
+
+export type EventEffect =
+  | { readonly kind: 'announcement'; readonly topic: string }
+  | {
+      readonly kind: 'sanctions';
+      readonly target: string;
+      readonly by: readonly string[];
+      /** 0–1: share of normal trade and finance cut off. */
+      readonly severity: number;
+    }
+  | { readonly kind: 'sanctions-eased'; readonly target: string; readonly by: readonly string[] }
+  | {
+      readonly kind: 'trade-shock';
+      /** 'world' or a country id. */
+      readonly scope: string;
+      /** Multiplier on trade volume while active, e.g. 0.8. */
+      readonly factor: number;
+      readonly weeks: number;
+    }
+  | {
+      readonly kind: 'route-disruption';
+      /** A route node id (usually a chokepoint or border). */
+      readonly node: string;
+      /** Multiplier on capacity while active; 0 = closed. */
+      readonly factor: number;
+      readonly weeks: number;
+    }
+  | { readonly kind: 'tariff'; readonly by: string; readonly on: string; readonly rate: number }
+  | { readonly kind: 'bloc-join' | 'bloc-leave'; readonly country: string; readonly bloc: Bloc }
+  | { readonly kind: 'bri-membership'; readonly country: string; readonly joined: boolean }
+  | { readonly kind: 'imf-program'; readonly country: string; readonly amountBn: number }
+  | { readonly kind: 'debt-distress'; readonly country: string; readonly severity: number }
+  | { readonly kind: 'policy'; readonly actor: string; readonly policy: Policy }
+  | {
+      readonly kind: 'disaster';
+      readonly region: string;
+      readonly hazard: Hazard;
+      readonly severity: number;
+    }
+  | {
+      readonly kind: 'conflict';
+      readonly country: string;
+      readonly severity: number;
+      readonly weeks: number;
+    }
+  | {
+      readonly kind: 'security-attack';
+      readonly region: string;
+      /** What was attacked, e.g. 'chinese-workers', 'port', 'convoy'. */
+      readonly target: string;
+      readonly severity: number;
+    }
+  | { readonly kind: 'pandemic'; readonly severity: number; readonly weeks: number };
+
+export interface HistoricalEvent extends Sourced {
+  readonly id: string;
+  readonly date: CivilDate;
+  /** Belt and Road specific: removed from the no-BRI shadow world. */
+  readonly bri: boolean;
+  /** Country or organisation ids involved. */
+  readonly actors: readonly string[];
+  readonly effects: readonly EventEffect[];
 }

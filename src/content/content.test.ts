@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import en from '../i18n/en.json';
+import { en } from '../i18n/en';
 import { COUNTRIES } from './countries';
 import { CULTURES } from './cultures';
 import { REGIONS } from './regions';
