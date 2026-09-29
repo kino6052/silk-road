@@ -96,4 +96,24 @@ describe('createRng', () => {
     expect(() => rng.int(0.5, 2)).toThrow(RangeError);
     expect(() => rng.int(0, 2.5)).toThrow(RangeError);
   });
+
+  it('never fires chance(p <= 0) and always fires chance(p >= 1)', () => {
+    fc.assert(
+      fc.property(keyArb, (key) => {
+        const rng = createRng(key);
+        expect(rng.chance(0)).toBe(false);
+        expect(rng.chance(-0.5)).toBe(false);
+        expect(rng.chance(1)).toBe(true);
+        expect(rng.chance(2)).toBe(true);
+      }),
+    );
+  });
+
+  it('fires chance(p) with frequency p', () => {
+    const rng = createRng({ seed: 3, stream: 'chance', entity: 0, tick: 0 });
+    const draws = 20_000;
+    let hits = 0;
+    for (let i = 0; i < draws; i++) if (rng.chance(0.3)) hits++;
+    expect(hits / draws).toBeCloseTo(0.3, 2);
+  });
 });

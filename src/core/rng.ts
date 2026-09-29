@@ -11,6 +11,7 @@ export interface Rng {
   next(): number;
   float(): number;
   int(min: number, maxExclusive: number): number;
+  chance(probability: number): boolean;
 }
 
 /** 2^32: turns a uint32 into a float in [0, 1). */
@@ -34,6 +35,9 @@ export function createRng(key: RngKey): Rng {
         throw new RangeError(`invalid integer range [${String(min)}, ${String(maxExclusive)})`);
       }
       return min + Math.floor(float() * (maxExclusive - min));
+    },
+    chance: () => {
+      throw new Error('not implemented');
     },
   };
 }
