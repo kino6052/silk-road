@@ -1046,3 +1046,20 @@ html {
     width: 100%;
   }
 }
+
+/* Pixel fonts have no triangle glyphs: use plain signs for the menu toggle. */
+@media (max-width: 760px) {
+  .menu > summary::after {
+    content: ' +';
+  }
+
+  .menu[open] > summary::after {
+    content: ' -';
+  }
+
+  .topbar .speeds button {
+    flex: 1 1 auto;
+    padding: 10px 5px;
+    font-size: 7px;
+  }
+}

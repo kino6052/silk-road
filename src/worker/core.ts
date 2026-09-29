@@ -1,4 +1,4 @@
-import { weekToDate, type CivilDate } from '../core/calendar';
+import { civilFromDays, daysFromCivil, weekToDate, type CivilDate } from '../core/calendar';
 import { required } from '../core/required';
 import type { Content } from '../content/types';
 import { initialState, reduce, type AppState, type Command } from '../app/state';
@@ -91,7 +91,7 @@ export function createCore(content: Content, grid: MapGrid, seed: number, people
     return {
       type: 'frame',
       frame: {
-        date: weekToDate(twins.bri.week),
+        date: civilFromDays(daysFromCivil(weekToDate(twins.bri.week)) + Math.floor(hour / 24)),
         week: twins.bri.week,
         hour,
         state,
