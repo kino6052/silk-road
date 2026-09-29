@@ -229,6 +229,7 @@ export function generatePopulation(content: Content, seed: number, target: numbe
           mother: isChild ? parent('f') : null,
           father: isChild ? parent('m') : null,
           log: [],
+          beliefs: {},
         };
         people.push(person);
         regionPeople.push(person);

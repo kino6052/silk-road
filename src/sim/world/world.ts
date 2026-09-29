@@ -4,6 +4,7 @@ import { required } from '../../core/required';
 import type { Content, Country, Region } from '../../content/types';
 import { generatePopulation, PEOPLE_PER_WORLD, regionIncome } from '../people/generate';
 import type { Household, Person } from '../people/types';
+import type { PendingNudge, TurningPoint } from '../minds/decisions';
 import type {
   ActiveEffect,
   CountryState,
@@ -38,6 +39,10 @@ export interface World {
   /** Sample people, indexed by id; the dead stay for history. */
   people: Person[];
   households: Household[];
+  /** Open and recently decided turning points in people's lives. */
+  turningPoints: TurningPoint[];
+  /** Nudges waiting for a matching turning point (used to mirror nudges into the shadow world). */
+  pendingNudges: PendingNudge[];
 }
 
 export interface WorldOptions {
@@ -124,6 +129,8 @@ export function createWorld(content: Content, { seed, bri, people }: WorldOption
     firedEvents: [],
     stats: {},
     ...generatePopulation(content, seed, people ?? PEOPLE_PER_WORLD),
+    turningPoints: [],
+    pendingNudges: [],
   };
 }
 

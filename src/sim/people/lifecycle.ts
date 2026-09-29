@@ -189,6 +189,7 @@ export function createLifecycleSystem(content: Content): System {
       mother: mother.id,
       father: father.id,
       log: [],
+      beliefs: {},
     };
     world.people.push(baby);
     required(world.households[mother.household], 'household').members.push(baby.id);

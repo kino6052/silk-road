@@ -58,6 +58,7 @@ export type LifeEventKind =
   | 'moved'
   | 'displaced'
   | 'widowed'
+  | 'decided'
   | 'died';
 
 export interface LifeEvent {
@@ -91,6 +92,22 @@ export interface Person {
   readonly father: number | null;
   /** Most recent life events, newest last, capped in length. */
   log: LifeEvent[];
+  /** What this person believes, by topic id (see sim/minds/topics). */
+  beliefs: Record<string, Belief>;
+}
+
+export type SourceKind =
+  'state-media' | 'independent-media' | 'social-media' | 'word-of-mouth' | 'employer' | 'own-eyes';
+
+export interface Belief {
+  /** 0–1, meaning depends on the topic (e.g. 'the air is bad'). */
+  value: number;
+  /** 0–1. */
+  confidence: number;
+  /** Where they last heard about it. */
+  source: SourceKind;
+  /** Week of the last update. */
+  since: number;
 }
 
 export interface Household {
