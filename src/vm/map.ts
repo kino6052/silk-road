@@ -35,6 +35,7 @@ export interface MapVm {
 }
 
 const clamp01 = (value: number) => Math.min(1, Math.max(0, value));
+const DIMENSIONS = ['income', 'health', 'security', 'freedom', 'belonging', 'outlook'] as const;
 const BUSY_LINK_TEU = 20_000;
 const INCOME_LOW = Math.log(1000);
 const INCOME_SPAN = Math.log(60_000) - INCOME_LOW;
@@ -58,10 +59,10 @@ function overlayValue(world: World, region: string, country: string, overlay: Ov
     case 'wellbeing': {
       const residents = world.people.filter((p) => p.deathWeek === null && p.region === region);
       if (residents.length === 0) return 0.5;
-      const total = residents.reduce(
-        (sum, p) => sum + Object.values(p.wellbeing).reduce((a, b) => a + b, 0) / 6,
-        0,
-      );
+      const average = (person: (typeof residents)[number]): number =>
+        DIMENSIONS.reduce((sum, dimension) => sum + person.wellbeing[dimension], 0) /
+        DIMENSIONS.length;
+      const total = residents.reduce((sum, person) => sum + average(person), 0);
       return clamp01(total / residents.length);
     }
   }
