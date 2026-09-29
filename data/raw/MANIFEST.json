@@ -1,0 +1,15 @@
+{
+  "files": [
+    {
+      "file": "owid-co2-trimmed.csv",
+      "title": "Our World in Data \u2014 CO2 and Greenhouse Gas Emissions dataset (trimmed)",
+      "url": "https://github.com/owid/co2-data",
+      "downloadUrl": "https://raw.githubusercontent.com/owid/co2-data/master/owid-co2-data.csv",
+      "license": "CC BY 4.0",
+      "retrieved": "2026-09-29",
+      "trim": "Rows: the 13 corridor countries, 6 external countries (ISO3) and 'European Union (27)'; years 2000-2024. Columns: country, year, iso_code, population, gdp, co2, co2_per_capita, coal_co2.",
+      "notes": "gdp is OWID's Maddison-based series in international-$ (2011 prices).",
+      "sha256": "9935f97b335fddc7d25fe233bc53b7cbc43907201c4947b04071b3c8db509572"
+    }
+  ]
+}
