@@ -51,13 +51,18 @@ export function peopleSystems(content: Content): System[] {
 
 /** The BRI world and its shadow, stepped together through every system. */
 export function createSimulation(content: Content, options: SimulationOptions): Simulation {
-  const pipeline = createPipeline([...macroSystems(content), ...peopleSystems(content)]);
   const twins = createTwins(options.seed, (world) =>
     createWorld(content, {
       ...world,
       ...(options.people === undefined ? {} : { people: options.people }),
     }),
   );
+  return resumeSimulation(content, twins);
+}
+
+/** Continues existing twins (e.g. from a save) through every system. */
+export function resumeSimulation(content: Content, twins: Twins): Simulation {
+  const pipeline = createPipeline([...macroSystems(content), ...peopleSystems(content)]);
   return {
     twins,
     step: () => {
