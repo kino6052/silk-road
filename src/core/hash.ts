@@ -20,3 +20,7 @@ export function hashWords(words: readonly number[], seed = 0): number {
   h ^= words.length * 4;
   return fmix32(h);
 }
+
+export function hashString(_text: string): number {
+  throw new Error('not implemented');
+}
