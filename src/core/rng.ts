@@ -36,8 +36,6 @@ export function createRng(key: RngKey): Rng {
       }
       return min + Math.floor(float() * (maxExclusive - min));
     },
-    chance: () => {
-      throw new Error('not implemented');
-    },
+    chance: (probability) => float() < probability,
   };
 }
