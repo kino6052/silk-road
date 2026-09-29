@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { createWorld, stateHash, type World } from '../world/world';
+import { fixtureContent } from '../testing/content.fixture';
+import { createWorld as createFromContent, stateHash, type World } from '../world/world';
 import { createPipeline, createTwins, stepTwins, stepWorld, type System } from './engine';
+
+const content = fixtureContent();
+const createWorld = (options: { seed: number; bri: boolean }): World =>
+  createFromContent(content, options);
 
 const recorder = (id: string, log: string[]): System => ({
   id,
@@ -53,9 +58,9 @@ describe('pipeline', () => {
 
 describe('twins', () => {
   it('pairs a BRI world with a shadow world on the same seed', () => {
-    const twins = createTwins(9);
-    expect(twins.bri).toEqual({ seed: 9, bri: true, week: 0 });
-    expect(twins.shadow).toEqual({ seed: 9, bri: false, week: 0 });
+    const twins = createTwins(9, createWorld);
+    expect([twins.bri.seed, twins.bri.bri, twins.bri.week]).toEqual([9, true, 0]);
+    expect([twins.shadow.seed, twins.shadow.bri, twins.shadow.week]).toEqual([9, false, 0]);
   });
 
   it('builds both worlds with a custom factory', () => {
@@ -71,7 +76,7 @@ describe('twins', () => {
   it('steps both worlds in lockstep with aligned random draws', () => {
     const briDraws: number[] = [];
     const shadowDraws: number[] = [];
-    const twins = createTwins(4);
+    const twins = createTwins(4, createWorld);
     const system: System = {
       id: 'noise',
       step: (world, ctx) => (world.bri ? briDraws : shadowDraws).push(ctx.rng(3).next()),

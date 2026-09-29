@@ -1,5 +1,6 @@
 import { canonicalJson } from '../../core/canonical-json';
 import { hashString } from '../../core/hash';
+import type { Content } from '../../content/types';
 
 /**
  * The whole simulation state. It is plain JSON-safe data so it can be cloned, hashed,
@@ -20,8 +21,8 @@ export interface WorldOptions {
 /** Bump when the save structure changes incompatibly. */
 const SAVE_FORMAT = 1;
 
-export function createWorld({ seed, bri }: WorldOptions): World {
-  return { seed, bri, week: 0 };
+export function createWorld(_content: Content, _options: WorldOptions): World {
+  throw new Error('not implemented');
 }
 
 export function cloneWorld(world: World): World {

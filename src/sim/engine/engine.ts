@@ -1,6 +1,6 @@
 import { weekToDate, type CivilDate } from '../../core/calendar';
 import { createRng, type Rng } from '../../core/rng';
-import { createWorld, type World, type WorldOptions } from '../world/world';
+import type { World, WorldOptions } from '../world/world';
 
 export interface SystemContext {
   readonly week: number;
@@ -53,10 +53,7 @@ export function stepWorld(world: World, pipeline: readonly System[]): void {
   world.week += 1;
 }
 
-export function createTwins(
-  seed: number,
-  create: (options: WorldOptions) => World = createWorld,
-): Twins {
+export function createTwins(seed: number, create: (options: WorldOptions) => World): Twins {
   return { bri: create({ seed, bri: true }), shadow: create({ seed, bri: false }) };
 }
 

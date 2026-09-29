@@ -1,13 +1,6 @@
-export interface IndicatorYear {
-  readonly population: number | null;
-  readonly gdp: number | null;
-  readonly co2: number | null;
-  readonly co2PerCapita: number | null;
-  readonly coalCo2: number | null;
-}
+import type { IndicatorYear } from '../src/content/types.ts';
 
-/** Country id → year → values. */
-export type Indicators = Record<string, Record<string, IndicatorYear>>;
+type MutableIndicators = Record<string, Record<string, IndicatorYear>>;
 
 const EU_AGGREGATE = 'European Union (27)';
 
@@ -19,8 +12,8 @@ const toNumber = (value: string | undefined, label: string): number | null => {
 };
 
 /** Turns trimmed OWID CO2-dataset records into per-country, per-year indicators. */
-export function buildIndicators(records: readonly Record<string, string>[]): Indicators {
-  const indicators: Indicators = {};
+export function buildIndicators(records: readonly Record<string, string>[]): MutableIndicators {
+  const indicators: MutableIndicators = {};
   for (const record of records) {
     const id = record.country === EU_AGGREGATE ? 'EU' : record.iso_code;
     const label = `${String(record.country)} ${String(record.year)}`;
