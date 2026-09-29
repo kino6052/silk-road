@@ -15,7 +15,9 @@ const finite = (min: number, max: number) =>
 describe('exp', () => {
   it('matches Math.exp across the finite range', () => {
     fc.assert(
-      fc.property(finite(-700, 700), (x) => closeTo(exp(x), Math.exp(x))),
+      fc.property(finite(-700, 700), (x) => {
+        closeTo(exp(x), Math.exp(x));
+      }),
       {
         numRuns: 300,
       },
@@ -63,9 +65,9 @@ describe('pow', () => {
 
   it('matches Math.pow for fractional exponents', () => {
     fc.assert(
-      fc.property(finite(1e-3, 1e3), finite(-5, 5), (x, y) =>
-        closeTo(pow(x, y), Math.pow(x, y), 1e-12),
-      ),
+      fc.property(finite(1e-3, 1e3), finite(-5, 5), (x, y) => {
+        closeTo(pow(x, y), Math.pow(x, y), 1e-12);
+      }),
       { numRuns: 300 },
     );
   });
