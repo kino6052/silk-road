@@ -28,18 +28,18 @@ export function createRng(key: RngKey): Rng {
   let counter = 0;
   const next = (): number => hashWords([...base, counter++]);
   const float = (): number => next() / UINT32_RANGE;
+  const int = (min: number, maxExclusive: number): number => {
+    if (!Number.isInteger(min) || !Number.isInteger(maxExclusive) || maxExclusive <= min) {
+      throw new RangeError(`invalid integer range [${String(min)}, ${String(maxExclusive)})`);
+    }
+    return min + Math.floor(float() * (maxExclusive - min));
+  };
   return {
     next,
     float,
-    int: (min, maxExclusive) => {
-      if (!Number.isInteger(min) || !Number.isInteger(maxExclusive) || maxExclusive <= min) {
-        throw new RangeError(`invalid integer range [${String(min)}, ${String(maxExclusive)})`);
-      }
-      return min + Math.floor(float() * (maxExclusive - min));
-    },
+    int,
     chance: (probability) => float() < probability,
-    pick: () => {
-      throw new Error('not implemented');
-    },
+    // int() throws on an empty list and otherwise returns a valid index.
+    pick: <T>(items: readonly T[]): T => items[int(0, items.length)] as T,
   };
 }
