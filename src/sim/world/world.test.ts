@@ -11,13 +11,20 @@ import {
 } from './world';
 
 const content = fixtureContent();
-const make = (seed: number, bri: boolean) => createWorld(content, { seed, bri });
+const make = (seed: number, bri: boolean) => createWorld(content, { seed, bri, people: 20 });
 
 const worldArb: fc.Arbitrary<World> = fc
   .record({ seed: fc.nat(), bri: fc.boolean(), week: fc.nat({ max: 5000 }) })
   .map(({ seed, bri, week }) => Object.assign(make(seed, bri), { week }));
 
 describe('createWorld', () => {
+  it('generates the same people for both twins', () => {
+    const bri = make(4, true);
+    expect(bri.people.length).toBeGreaterThanOrEqual(20);
+    expect(make(4, false).people).toEqual(bri.people);
+    expect(make(4, false).households).toEqual(bri.households);
+  });
+
   it('starts at week 0 with the given seed and BRI flag', () => {
     const world = make(7, false);
     expect([world.seed, world.bri, world.week]).toEqual([7, false, 0]);

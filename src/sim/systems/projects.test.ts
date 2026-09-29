@@ -9,7 +9,7 @@ const content = fixtureContent();
 const pipeline = createPipeline([createProjectsSystem(content)]);
 
 const at = (year: number, month: number, day: number, bri = true): World => {
-  const world = createWorld(content, { seed: 1, bri });
+  const world = createWorld(content, { seed: 1, bri, people: 12 });
   world.week = dateToWeek({ year, month, day });
   stepWorld(world, pipeline);
   return world;

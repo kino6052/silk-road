@@ -37,6 +37,8 @@ export interface World {
 export interface WorldOptions {
   readonly seed: number;
   readonly bri: boolean;
+  /** Sample people to generate; defaults to PEOPLE_PER_WORLD. */
+  readonly people?: number;
 }
 
 /** Bump when the save structure changes incompatibly. */

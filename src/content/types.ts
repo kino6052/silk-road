@@ -279,6 +279,21 @@ export interface IndicatorYear {
 /** Country id → year → values. */
 export type Indicators = Readonly<Record<string, Readonly<Record<string, IndicatorYear>>>>;
 
+/** Household and life-course parameters per corridor country (2013). */
+export interface Demography {
+  /** Average household size. */
+  readonly householdSize: number;
+  /** Share of working-age women who are homemakers. */
+  readonly homemakerShare: number;
+  readonly retirementAge: number;
+  /** Typical educational attainment, 0–1. */
+  readonly education: number;
+  /** Total fertility rate. */
+  readonly fertility: number;
+  /** Life expectancy at birth, years. */
+  readonly lifeExpectancy: number;
+}
+
 /** Everything static the simulation is built from. */
 export interface Content {
   readonly countries: readonly Country[];
@@ -289,4 +304,5 @@ export interface Content {
   readonly projects: readonly Project[];
   readonly events: readonly HistoricalEvent[];
   readonly indicators: Indicators;
+  readonly demography: Readonly<Record<string, Demography>>;
 }

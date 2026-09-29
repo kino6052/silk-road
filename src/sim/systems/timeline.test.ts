@@ -50,7 +50,7 @@ const content = {
 const pipeline = createPipeline([createTimelineSystem(content)]);
 
 const run = (weeks: number, bri = true): World => {
-  const world = createWorld(content, { seed: 1, bri });
+  const world = createWorld(content, { seed: 1, bri, people: 12 });
   for (let i = 0; i < weeks; i++) stepWorld(world, pipeline);
   return world;
 };

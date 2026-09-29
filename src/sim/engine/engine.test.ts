@@ -5,7 +5,7 @@ import { createPipeline, createTwins, stepTwins, stepWorld, type System } from '
 
 const content = fixtureContent();
 const createWorld = (options: { seed: number; bri: boolean }): World =>
-  createFromContent(content, options);
+  createFromContent(content, { ...options, people: 12 });
 
 const recorder = (id: string, log: string[]): System => ({
   id,
