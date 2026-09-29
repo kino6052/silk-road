@@ -7,6 +7,20 @@ cycles (see `CLAUDE.md`). A milestone is done when all of these hold:
 - Calibration tests for the systems it touches pass.
 - Every new user-facing string goes through i18n.
 
+## Status
+
+| Milestone                       | State                                                                                                                    |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| M0 Scaffold and guardrails      | ✅ done                                                                                                                  |
+| M1 Engine                       | ✅ done                                                                                                                  |
+| M2 Data pipeline and content v1 | ✅ done: 13+7 countries, 41 regions, 27 cultures, 72 nodes, 109 links, 21 projects, 60 events, OWID + Natural Earth data |
+| M3 Macro systems                | ✅ done: timeline, projects, economy, finance, trade, labour, environment; history calibration passes                    |
+| M4 People                       | ✅ done                                                                                                                  |
+| M5 Minds                        | ✅ done: thought templates moved to M7                                                                                   |
+| M6 Micro time                   | ⏳ next after the view                                                                                                   |
+| M7 Generators and view-models   | 🔨 in progress                                                                                                           |
+| M8 App shell and debug view     | ⏳                                                                                                                       |
+
 ## v0.1 — Core loop
 
 ### M0 · Scaffold and guardrails
