@@ -5,6 +5,7 @@ import type { Overlay } from '../vm/map';
 import type { Frame, Reply } from '../worker/core';
 import { button, clock, delegate, formatDate, h, t, type Send } from './dom';
 import { createMap } from './map';
+import { createCountry, createPerson, createStories } from './panels';
 
 const SPEEDS: readonly Speed[] = ['paused', 'micro', 'week', 'month', 'year'];
 const OVERLAYS: readonly Overlay[] = [
@@ -57,7 +58,15 @@ export function createApp(root: HTMLElement, send: Send): { onReply(reply: Reply
   const status = h('span', { className: 'status', role: 'status' });
 
   const map = createMap(send);
-  const side = h('aside', { className: 'side' }, tabs, h('div', { className: 'panels' }));
+  const country = createCountry(send);
+  const stories = createStories();
+  const person = createPerson();
+  const side = h(
+    'aside',
+    { className: 'side' },
+    tabs,
+    h('div', { className: 'panels' }, country.el, stories.el, person.el),
+  );
 
   root.replaceChildren(
     h(
@@ -87,6 +96,9 @@ export function createApp(root: HTMLElement, send: Send): { onReply(reply: Reply
     mark(tabs, state.tab);
     if (overlay.value !== state.overlay) overlay.value = state.overlay;
     map.render(frame);
+    country.render(frame);
+    stories.render(frame);
+    person.render(frame);
   };
 
   return {
