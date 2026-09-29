@@ -21,6 +21,10 @@ cycles (see `CLAUDE.md`). A milestone is done when all of these hold:
 | M7 Generators and view-models   | 🔨 in progress                                                                                                           |
 | M8 App shell and debug view     | ⏳                                                                                                                       |
 
+Known follow-ups for v0.2: route sea links around coasts on the map; smaller saves; faster
+steps (top speed is about half a sim-year per second); stronger local contrast between the BRI
+and shadow worlds; simulate needs hour by hour for the focused person.
+
 ## v0.1 — Core loop
 
 ### M0 · Scaffold and guardrails
