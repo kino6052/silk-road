@@ -163,4 +163,25 @@ describe('decisions system', () => {
     expect(refused?.reasons[0]).toBe('reason.refused-nudge');
     expect(closed).toMatchObject({ chosen: 'stay', reasons: ['reason.died'] });
   });
+
+  it('offers Belt and Road jobs wherever it is building, and remembers the employer', () => {
+    const struggling = (w: World) => {
+      for (const person of w.people)
+        if (person.region === 'AAA-TWO' && person.role !== 'child') person.role = 'unemployed';
+    };
+    const bri = run(104, struggling);
+    const offers = bri.turningPoints.filter(
+      (tp) => tp.kind === 'job-offer' && bri.people[tp.person]?.region === 'AAA-TWO',
+    );
+    expect(offers.length).toBeGreaterThan(0);
+    const hired = offers.filter((tp) => tp.chosen === 'accept').map((tp) => bri.people[tp.person]);
+    expect(hired.length).toBeGreaterThan(0);
+    for (const person of hired) expect(person?.employer).toBe('bri:AAA');
+    const shadow = run(104, struggling, false);
+    expect(
+      shadow.turningPoints.some(
+        (tp) => tp.kind === 'job-offer' && shadow.people[tp.person]?.region === 'AAA-TWO',
+      ),
+    ).toBe(false);
+  });
 });

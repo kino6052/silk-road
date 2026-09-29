@@ -98,12 +98,17 @@ describe('lifecycle system', () => {
 
   it('lays people off faster during a pandemic', () => {
     const pandemic = run(156, (w) => {
+      for (const person of w.people)
+        if (person.role === 'construction-worker') person.employer = 'bri:AAA';
       w.effects.push({
         source: 'test',
         effect: { kind: 'pandemic', severity: 1, weeks: 999 },
         untilWeek: 1e9,
       });
     });
+    for (const person of pandemic.people.filter((p) => p.role === 'unemployed')) {
+      expect(person.employer).toBeNull();
+    }
     expect(logged(pandemic, 'job-lost').length).toBeGreaterThan(
       logged(run(156), 'job-lost').length,
     );

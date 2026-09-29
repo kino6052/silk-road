@@ -92,6 +92,8 @@ export interface Person {
   readonly father: number | null;
   /** Most recent life events, newest last, capped in length. */
   log: LifeEvent[];
+  /** Project id, or `bri:<country>` for the wider Belt and Road, while working on one. */
+  employer: string | null;
   /** What this person believes, by topic id (see sim/minds/topics). */
   beliefs: Record<string, Belief>;
 }
