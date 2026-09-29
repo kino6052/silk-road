@@ -6,6 +6,7 @@ import type { Frame, Reply } from '../worker/core';
 import { button, clock, delegate, formatDate, h, t, type Send } from './dom';
 import { createMap } from './map';
 import { createCountry, createPerson, createStories } from './panels';
+import { createSaves } from './saves';
 
 const SPEEDS: readonly Speed[] = ['paused', 'micro', 'week', 'month', 'year'];
 const OVERLAYS: readonly Overlay[] = [
@@ -56,6 +57,8 @@ export function createApp(root: HTMLElement, send: Send): { onReply(reply: Reply
     ...TABS.map((tab) => button(t(`tab.${tab}`), { type: 'tab', tab }, { 'data-value': tab })),
   );
   const status = h('span', { className: 'status', role: 'status' });
+  let last: Frame | null = null;
+  const saves = createSaves(send, status, () => last?.date ?? null);
 
   const map = createMap(send);
   const country = createCountry(send);
@@ -78,6 +81,7 @@ export function createApp(root: HTMLElement, send: Send): { onReply(reply: Reply
       overlay,
       worlds,
       modes,
+      saves.el,
       status,
     ),
     h('main', { className: 'main' }, h('section', { className: 'map-pane' }, map.el), side),
@@ -85,6 +89,7 @@ export function createApp(root: HTMLElement, send: Send): { onReply(reply: Reply
   delegate(root, send);
 
   const render = (frame: Frame) => {
+    last = frame;
     const { state } = frame;
     root.dataset.mode = state.mode;
     root.dataset.tab = state.tab;
@@ -108,6 +113,7 @@ export function createApp(root: HTMLElement, send: Send): { onReply(reply: Reply
           render(reply.frame);
           return;
         case 'saved':
+          saves.onSaved(reply.text);
           return;
         case 'error':
           status.textContent = t(reply.message);
