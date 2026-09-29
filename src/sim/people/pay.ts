@@ -15,6 +15,12 @@ export const LOGISTICS_ELASTICITY = 0.3;
 export const LOGISTICS_CAP = 0.6;
 /** Local traders earn this much more where the Belt and Road is at work. */
 export const TRADE_SPILLOVER = 0.15;
+/** Monthly chance a project contract ends while the works go on (about two and a half years). */
+export const CONTRACT_END = 1 / 30;
+/** Monthly chance once the employer has stopped building in the region. */
+export const WIND_DOWN_END = 0.25;
+/** Projects hire at most this share of a region's labour force (modelling assumption). */
+export const BRI_WORKFORCE_CAP = 0.1;
 
 const LOGISTICS: ReadonlySet<Role> = new Set([
   'truck-driver',
@@ -26,6 +32,13 @@ const LOGISTICS: ReadonlySet<Role> = new Set([
 ]);
 const TRADERS: ReadonlySet<Role> = new Set(['market-trader', 'shopkeeper', 'entrepreneur']);
 const ACTIVE = new Set(['construction', 'operating']);
+const OUTSIDE_LABOUR_FORCE: ReadonlySet<Role> = new Set(['child', 'student', 'retiree']);
+
+export interface Payroll {
+  /** People on a project payroll, or with a job offer pending. */
+  staff: number;
+  labour: number;
+}
 
 export interface Pay {
   /** Records each region's first freight volume, the baseline for logistics pay. */
@@ -34,6 +47,10 @@ export interface Pay {
   briWorks(world: World, region: string): boolean;
   /** Multiplier on a person's base pay from who they work for and what their region trades. */
   factor(world: World, person: Person): number;
+  /** Monthly chance that a person's project contract ends. */
+  contractEnd(world: World, person: Person): number;
+  /** Labour force and project payrolls per region. */
+  payrolls(world: World): Map<string, Payroll>;
 }
 
 const baseKey = (region: string) => `pay.throughputBase.${region}`;
@@ -69,6 +86,30 @@ export function createPay(content: Content): Pay {
       }
     },
     briWorks,
+    contractEnd: (world, person) => {
+      if (person.employer === null) return 0;
+      const building = person.employer.startsWith('bri:')
+        ? briWorks(world, person.region)
+        : world.projects[person.employer]?.status === 'construction';
+      return building ? CONTRACT_END : WIND_DOWN_END;
+    },
+    payrolls: (world) => {
+      const offered = new Set(
+        world.turningPoints
+          .filter((tp) => tp.kind === 'job-offer' && tp.chosen === null)
+          .map((tp) => tp.person),
+      );
+      const payrolls = new Map<string, Payroll>(
+        Object.keys(world.regions).map((region) => [region, { staff: 0, labour: 0 }]),
+      );
+      for (const person of world.people) {
+        if (person.deathWeek !== null || OUTSIDE_LABOUR_FORCE.has(person.role)) continue;
+        const payroll = required(payrolls.get(person.region), 'payroll');
+        payroll.labour++;
+        if (person.employer !== null || offered.has(person.id)) payroll.staff++;
+      }
+      return payrolls;
+    },
     factor: (world, person) => {
       if (person.employer !== null) {
         const bri =

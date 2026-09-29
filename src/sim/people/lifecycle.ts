@@ -156,6 +156,9 @@ export function createLifecycleSystem(content: Content): System {
           : sampleWorkRole(rng, region, regionFeature);
         record(person, world.week, 'job', person.role);
       }
+    } else if (person.employer !== null && rng.chance(pay.contractEnd(world, person))) {
+      record(person, world.week, 'job-lost', person.role);
+      person.role = 'unemployed';
     } else if (!NON_WORKING.has(person.role)) {
       const pandemic = world.effects.some(({ effect }) => effect.kind === 'pandemic') ? 3 : 1;
       if (rng.chance(state.unemployment * 0.03 * pandemic)) {

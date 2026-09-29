@@ -3,7 +3,7 @@ import type { Rng } from '../../core/rng';
 import type { Content } from '../../content/types';
 import type { System } from '../engine/engine';
 import { ageAt, bestRegionFor, isDue, record, relocate } from '../people/lifecycle';
-import { createPay, type Pay } from '../people/pay';
+import { BRI_WORKFORCE_CAP, createPay, type Pay, type Payroll } from '../people/pay';
 import type { Person } from '../people/types';
 import type { World } from '../world/world';
 import { believed, topicId } from './topics';
@@ -208,6 +208,7 @@ function trigger(
   world: World,
   content: Content,
   pay: Pay,
+  payrolls: Map<string, Payroll>,
   person: Person,
   rng: Rng,
 ): TurningPointKind | null {
@@ -222,10 +223,14 @@ function trigger(
       project.region === person.region && world.projects[project.id]?.status === 'construction',
   );
   const struggling = person.role === 'unemployed' || person.wellbeing.income < 0.35;
-  if (struggling && age <= 55) {
+  const payroll = required(payrolls.get(person.region), 'payroll');
+  if (struggling && age <= 55 && payroll.staff < BRI_WORKFORCE_CAP * payroll.labour) {
     // Flagship sites hire most; the wider Belt and Road hires along the corridors.
     const chance = building ? 0.15 : pay.briWorks(world, person.region) ? 0.08 : 0;
-    if (rng.chance(chance)) return 'job-offer';
+    if (rng.chance(chance)) {
+      payroll.staff++;
+      return 'job-offer';
+    }
   }
   if ((person.role === 'customs-officer' || person.role === 'local-official') && rng.chance(0.05)) {
     return 'bribe';
@@ -280,10 +285,11 @@ export function createDecisionsSystem(content: Content): System {
       const open = new Set(
         world.turningPoints.filter((tp) => tp.chosen === null).map((tp) => tp.person),
       );
+      const payrolls = pay.payrolls(world);
       for (const person of world.people) {
         if (person.deathWeek !== null || open.has(person.id) || !isDue(person, world.week))
           continue;
-        const kind = trigger(world, content, pay, person, ctx.rng(person.id, 'trigger'));
+        const kind = trigger(world, content, pay, payrolls, person, ctx.rng(person.id, 'trigger'));
         if (!kind) continue;
         const raised = `decisions.raised.${kind}`;
         world.stats[raised] = (world.stats[raised] ?? 0) + 1;
