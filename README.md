@@ -13,6 +13,10 @@ see who benefits and who pays.
 ![The corridors at one month per second, income overlay](docs/screenshots/macro-map.png)
 ![Kazakhstan with and without the Belt and Road](docs/screenshots/country-panel.png)
 
+On phones the HUD folds into a menu and the panels move to a bottom bar:
+
+<img src="docs/screenshots/mobile-micro.png" width="260" alt="The cold open on a phone"> <img src="docs/screenshots/mobile-macro.png" width="260" alt="The map on a phone">
+
 ## Play
 
 - You start **up close**, inside one life, in hours. Press **See the whole road** to zoom out.
