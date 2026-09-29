@@ -131,13 +131,16 @@ describe('labour system', () => {
     run(world, systems, 1);
     const one = must(world.stats['labour.migration.AAA-ONE']);
     const rest = must(world.stats['labour.migration.AAA-REST']);
-    // AAA-ONE earns twice as much; after living costs its pull is modest.
-    expect(one).toBeCloseTo(-rest, 6);
-    expect(-rest / 2e6).toBeGreaterThan(0.0005);
+    const two = must(world.stats['labour.migration.AAA-TWO']);
+    // AAA-ONE earns the most; after living costs its pull is modest. Totals are conserved.
+    expect(one).toBeCloseTo(-(rest + two), 6);
+    expect(-rest / 2e6).toBeGreaterThan(0.0003);
     expect(-rest / 2e6).toBeLessThan(MAX_MIGRATION_RATE);
     expect(
-      regionOf(world, 'AAA-ONE').population + regionOf(world, 'AAA-REST').population,
-    ).toBeCloseTo(4e6, 3);
+      regionOf(world, 'AAA-ONE').population +
+        regionOf(world, 'AAA-REST').population +
+        regionOf(world, 'AAA-TWO').population,
+    ).toBeCloseTo(4.5e6, 3);
     expect(world.stats['labour.migration.BBB-REST']).toBeCloseTo(0, 6);
     const settled = regionOf(world, 'AAA-ONE').population;
     run(world, systems, 3);

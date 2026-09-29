@@ -62,7 +62,7 @@ interface Situation {
 /** Why a person would act (first) or not act (second), as weighted reasons. */
 function weigh(
   kind: TurningPointKind,
-  { world, person, pressFreedom, corruption }: Situation,
+  { person, pressFreedom, corruption }: Situation,
 ): readonly [Factor[], Factor[]] {
   const { traits, wellbeing, beliefs, region } = person;
   const belief = (kind: Parameters<typeof topicId>[0]) => believed(beliefs, topicId(kind, region));
