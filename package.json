@@ -19,7 +19,7 @@
     "lint": "eslint --cache --cache-location node_modules/.cache/eslint/ .",
     "format": "prettier --cache --write .",
     "format:check": "prettier --cache --check .",
-    "verify": "node scripts/parallel.js format:check lint typecheck coverage && npm run build",
+    "verify": "npm run -s coverage && node scripts/parallel.js format:check lint typecheck && npm run -s build",
     "hooks": "git config core.hooksPath .githooks",
     "data": "node pipeline/cli.ts"
   },
