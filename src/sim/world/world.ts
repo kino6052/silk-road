@@ -27,6 +27,11 @@ export interface World {
   effects: ActiveEffect[];
   /** Ids of historical events already applied. */
   firedEvents: string[];
+  /**
+   * This week's published metrics, keyed `<system>.<metric>[.<id>]`, e.g.
+   * 'trade.rail.teu' or 'labour.foreignWorkers.PAK-BAL'. Systems overwrite their own keys.
+   */
+  stats: Record<string, number>;
 }
 
 export interface WorldOptions {
@@ -112,6 +117,7 @@ export function createWorld(content: Content, { seed, bri }: WorldOptions): Worl
     loans: [],
     effects: [],
     firedEvents: [],
+    stats: {},
   };
 }
 
