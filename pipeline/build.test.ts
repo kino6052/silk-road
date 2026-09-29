@@ -9,6 +9,27 @@ const fakeIo = (manifestSha: string) => {
   const written = new Map<string, string>();
   const files: Record<string, string> = {
     'data/raw/owid-co2-trimmed.csv': csv,
+    'data/raw/ne-110m-countries-trimmed.geojson': JSON.stringify({
+      features: [
+        {
+          properties: { code: 'GRC' },
+          geometry: {
+            type: 'MultiPolygon',
+            coordinates: [
+              [
+                [
+                  [20, 36],
+                  [26, 36],
+                  [26, 41],
+                  [20, 41],
+                  [20, 36],
+                ],
+              ],
+            ],
+          },
+        },
+      ],
+    }),
     'data/raw/MANIFEST.json': JSON.stringify({
       files: [
         {
@@ -20,6 +41,7 @@ const fakeIo = (manifestSha: string) => {
           sha256: manifestSha,
         },
       ],
+      mapFile: 'ne-110m-countries-trimmed.geojson',
     }),
   };
   const io: PipelineIo = {
@@ -40,6 +62,20 @@ describe('runPipeline', () => {
       written.get('src/content/generated/indicators.json') ?? '{}',
     ) as Record<string, Record<string, { population: number }>>;
     expect(indicators.GRC?.['2013']?.population).toBe(11e6);
+  });
+
+  it('rasterises the country borders into a run-length map grid', () => {
+    const { io, written } = fakeIo(createHash('sha256').update(csv).digest('hex'));
+    runPipeline(io);
+    const map = JSON.parse(written.get('src/content/generated/map.json') ?? '{}') as {
+      width: number;
+      height: number;
+      codes: string[];
+      runs: string;
+    };
+    expect([map.width, map.height]).toEqual([480, 320]);
+    expect(map.codes).toContain('GRC');
+    expect(map.runs.length).toBeGreaterThan(10);
   });
 
   it('refuses to run when the manifest check fails', () => {
