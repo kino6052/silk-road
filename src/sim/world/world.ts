@@ -59,7 +59,7 @@ function countryState(country: Country, content: Content): CountryState {
     chinaDebt: 0,
     debtDistress: 0,
     imfProgram: false,
-    sanctions: 0,
+    sanctions: country.sanctions,
     stability: 1,
     blocs: [...country.blocs],
     policies: [],

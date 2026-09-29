@@ -13,6 +13,7 @@ const country = (id: string, role: Country['role'], extra: Partial<Country> = {}
   pm25: 20,
   externalDebtBn: 10,
   growthTrend: 0.03,
+  sanctions: 0,
   ...sourced,
   ...extra,
 });

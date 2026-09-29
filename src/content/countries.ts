@@ -6,6 +6,9 @@ import type { Country } from './types';
 const SOURCE =
   'https://www.transparency.org/en/cpi/2013 ; https://rsf.org/en/index?year=2013 ; https://en.wikipedia.org/wiki/Shanghai_Cooperation_Organisation ; https://www.stateofglobalair.org/data ; https://datatopics.worldbank.org/debt/ids/';
 
+// Iran was under UN, US and EU sanctions in 2013; the EU had targeted sanctions on Belarus.
+const INITIAL_SANCTIONS: Readonly<Record<string, number>> = { IRN: 0.6, BLR: 0.1 };
+
 const country = (
   id: string,
   role: Country['role'],
@@ -24,6 +27,7 @@ const country = (
   pm25,
   externalDebtBn,
   growthTrend,
+  sanctions: INITIAL_SANCTIONS[id] ?? 0,
   provenance: 'estimated',
   source: SOURCE,
 });

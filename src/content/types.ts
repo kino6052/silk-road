@@ -31,6 +31,8 @@ export interface Country extends Sourced {
   readonly externalDebtBn: number;
   /** Long-run real GDP growth per year used once historical data ends. */
   readonly growthTrend: number;
+  /** Sanctions already in force in September 2013, 0–1 (e.g. Iran). */
+  readonly sanctions: number;
 }
 
 export type Religion =
