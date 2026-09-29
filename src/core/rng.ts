@@ -1,3 +1,5 @@
+import { hashString, hashWords } from './hash';
+
 export interface RngKey {
   readonly seed: number;
   readonly stream: string;
@@ -9,6 +11,10 @@ export interface Rng {
   next(): number;
 }
 
-export function createRng(_key: RngKey): Rng {
-  throw new Error('not implemented');
+export function createRng(key: RngKey): Rng {
+  const base = [key.seed, hashString(key.stream), key.entity, key.tick];
+  let counter = 0;
+  return {
+    next: () => hashWords([...base, counter++]),
+  };
 }
