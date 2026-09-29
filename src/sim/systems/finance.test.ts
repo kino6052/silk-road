@@ -166,7 +166,13 @@ describe('finance system: debt distress', () => {
   it('rises with the debt-service burden', () => {
     const heavy = { ...content, projects: [{ ...railAb, loanBn: 20, interestRate: 0.05 }] };
     const idle = distressAfter(104, () => undefined, heavy);
-    const burdened = distressAfter(104, (world) => build(world, 'rail-ab'), heavy);
+    const burdened = distressAfter(
+      104,
+      (world) => {
+        build(world, 'rail-ab');
+      },
+      heavy,
+    );
     expect(idle).toBeCloseTo(DEFAULT_BASELINE_DISTRESS, 12);
     expect(burdened).toBeGreaterThan(0.3);
   });
