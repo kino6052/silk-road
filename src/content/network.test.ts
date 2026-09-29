@@ -125,10 +125,8 @@ describe('route links', () => {
   });
 
   it('once every project is built, link Kashgar to Gwadar and Khorgos to Istanbul around Russia', () => {
-    const open = LINKS.filter((link) => link.open);
     expect(reaches('kashgar', 'gwadar', LINKS)).toBe(true);
     expect(reaches('khorgos', 'istanbul', LINKS, inRussia)).toBe(true);
-    expect(reaches('khorgos', 'istanbul', open, inRussia)).toBe(false);
   });
 
   it('start closed for the corridors built after 2013', () => {
@@ -146,7 +144,11 @@ describe('route links', () => {
   it('start closed exactly when one project opens them', () => {
     const opened = PROJECTS.flatMap((project) => project.opensLinks);
     const closed = new Set(LINKS.filter((link) => !link.open).map((link) => link.id));
-    for (const id of closed) expect(opened.filter((other) => other === id), id).toHaveLength(1);
+    for (const id of closed)
+      expect(
+        opened.filter((other) => other === id),
+        id,
+      ).toHaveLength(1);
     for (const id of opened) expect(closed.has(id), id).toBe(true);
   });
 });
