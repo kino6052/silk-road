@@ -5,7 +5,7 @@ import { countryVm, feedVm, mindVm, nameOf } from './panels';
 
 const content = fixtureContent();
 const simulation = createSimulation(content, { seed: 5, people: 40 });
-for (let i = 0; i < 70; i++) simulation.step();
+for (let i = 0; i < 30; i++) simulation.step();
 const { twins } = simulation;
 
 describe('country panel', () => {

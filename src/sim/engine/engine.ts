@@ -16,6 +16,8 @@ export interface SystemContext {
 export interface System {
   readonly id: string;
   step(world: World, ctx: SystemContext): void;
+  /** Optional one-off pass before the first week, e.g. to give everyone initial scores. */
+  prime?(world: World, ctx: SystemContext): void;
 }
 
 /** The BRI world and its no-BRI shadow, stepped together for comparison. */
@@ -45,6 +47,12 @@ function contextFor(world: World, systemId: string, date: CivilDate): SystemCont
         tick: world.week,
       }),
   };
+}
+
+/** Runs every system's prime pass once, without advancing time. */
+export function primeWorld(world: World, pipeline: readonly System[]): void {
+  const date = weekToDate(world.week);
+  for (const system of pipeline) system.prime?.(world, contextFor(world, system.id, date));
 }
 
 export function stepWorld(world: World, pipeline: readonly System[]): void {

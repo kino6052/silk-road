@@ -56,6 +56,16 @@ interface Save {
 const SAVE_FORMAT = 1;
 const FEED_LENGTH = 30;
 
+/** A save of the current format, or null for anything else (including malformed JSON). */
+function parseSave(text: string): Save | null {
+  try {
+    const save = JSON.parse(text) as Save;
+    return save.format === SAVE_FORMAT ? save : null;
+  } catch {
+    return null;
+  }
+}
+
 /** The cold-open protagonist: a trucker near Khorgos if there is one, else the first adult. */
 export function protagonist(world: World): number {
   const living = world.people.filter((p) => p.deathWeek === null && p.role !== 'child');
@@ -114,8 +124,8 @@ export function createCore(content: Content, grid: MapGrid, seed: number, people
           return { type: 'saved', text: JSON.stringify(save) };
         }
         case 'load': {
-          const save = JSON.parse(message.text) as Save;
-          if (save.format !== SAVE_FORMAT) return { type: 'error', message: 'save.invalid' };
+          const save = parseSave(message.text);
+          if (!save) return { type: 'error', message: 'save.invalid' };
           simulation = resumeSimulation(content, save.twins);
           ({ state, clock } = save);
           return frame();

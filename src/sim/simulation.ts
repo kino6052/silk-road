@@ -1,5 +1,12 @@
 import type { Content } from '../content/types';
-import { createPipeline, createTwins, stepTwins, type System, type Twins } from './engine/engine';
+import {
+  createPipeline,
+  createTwins,
+  primeWorld,
+  stepTwins,
+  type System,
+  type Twins,
+} from './engine/engine';
 import { createBeliefsSystem } from './minds/beliefs';
 import { createDecisionsSystem, nudge } from './minds/decisions';
 import { createLifecycleSystem } from './people/lifecycle';
@@ -57,7 +64,11 @@ export function createSimulation(content: Content, options: SimulationOptions): 
       ...(options.people === undefined ? {} : { people: options.people }),
     }),
   );
-  return resumeSimulation(content, twins);
+  const simulation = resumeSimulation(content, twins);
+  const pipeline = createPipeline([...macroSystems(content), ...peopleSystems(content)]);
+  primeWorld(twins.bri, pipeline);
+  primeWorld(twins.shadow, pipeline);
+  return simulation;
 }
 
 /** Continues existing twins (e.g. from a save) through every system. */

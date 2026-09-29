@@ -25,14 +25,11 @@
   "ui.provenance.simulated": "Simulated",
   "ui.legend": "Legend",
   "ui.intro": "It is 2013, and China has just announced the Belt and Road. Watch the corridor from China to Europe change year by year, side by side with a shadow world where the plan never happened. Step into any life along the way to read their thoughts, and when they face a choice, whisper; they may not listen.",
-
   "nudge.unavailable": "Too late: they have already decided.",
   "save.invalid": "This save file can't be read by this version of the game.",
-
   "tab.country": "Country",
   "tab.feed": "Stories",
   "tab.person": "Person",
-
   "mode.micro": "Up close",
   "mode.macro": "The big picture",
   "mode.zoom-out": "See the whole road",
@@ -40,16 +37,13 @@
   "mode.road": "Road",
   "mode.sea": "Sea",
   "mode.pipeline": "Pipeline",
-
   "world.bri": "With the Belt and Road",
   "world.shadow": "Without it (shadow world)",
-
   "speed.paused": "Paused",
   "speed.micro": "Hours",
   "speed.week": "1 week/s",
   "speed.month": "1 month/s",
   "speed.year": "1 year/s",
-
   "overlay.none": "No overlay",
   "overlay.income": "Income",
   "overlay.pollution": "Pollution",
@@ -57,7 +51,6 @@
   "overlay.china": "Views of China",
   "overlay.wellbeing": "Wellbeing",
   "overlay.debt": "Debt distress",
-
   "metric.gdp": "GDP (bn int-$)",
   "metric.gdpPerPerson": "GDP per person (int-$)",
   "metric.growth": "GDP growth",
@@ -71,14 +64,12 @@
   "metric.wellbeing.freedom": "Wellbeing: freedom",
   "metric.wellbeing.belonging": "Wellbeing: belonging",
   "metric.wellbeing.outlook": "Wellbeing: outlook",
-
   "wellbeing.income": "Income",
   "wellbeing.health": "Health",
   "wellbeing.security": "Security",
   "wellbeing.freedom": "Freedom",
   "wellbeing.belonging": "Belonging",
   "wellbeing.outlook": "Outlook",
-
   "activity.sleeping": "Sleeping",
   "activity.commuting": "On the way to work",
   "activity.working": "Working",
@@ -89,7 +80,6 @@
   "activity.school": "At school",
   "activity.resting": "Resting",
   "activity.celebrating": "Celebrating",
-
   "festival.spring-festival": "Spring Festival",
   "festival.nowruz": "Nowruz",
   "festival.ramadan": "Ramadan",
@@ -102,12 +92,10 @@
   "festival.coptic-christmas": "Coptic Christmas",
   "festival.losar": "Losar",
   "festival.ashura": "Ashura",
-
   "group.transport": "Transport workers",
   "group.locals": "Locals",
   "group.builders": "Builders & business",
   "group.officials": "Officials & finance",
-
   "role.child": "Child",
   "role.student": "Student",
   "role.homemaker": "Homemaker",
@@ -134,7 +122,6 @@
   "role.local-official": "Local official",
   "role.bank-analyst": "Bank analyst",
   "role.port-manager": "Port manager",
-
   "topic.jobs.question": "Is there new work around here?",
   "topic.jobs.label": "Jobs",
   "topic.pollution.question": "Is the air getting worse?",
@@ -151,14 +138,12 @@
   "topic.sanctions.label": "Sanctions",
   "topic.china.question": "Are the Chinese-backed projects helping us?",
   "topic.china.label": "Chinese projects",
-
   "source.state-media": "State media",
   "source.independent-media": "Independent media",
   "source.social-media": "Social media",
   "source.word-of-mouth": "Word of mouth",
   "source.employer": "Their employer",
   "source.own-eyes": "Their own eyes",
-
   "life.married": "Got married.",
   "life.child-born": "Had a child.",
   "life.job": "Started a new job.",
@@ -169,7 +154,6 @@
   "life.widowed": "Lost their spouse.",
   "life.decided": "Made a hard choice.",
   "life.died": "Died in {detail}.",
-
   "decision.job-offer.title": "Take a job at the construction site?",
   "decision.job-offer.accept": "Take the job",
   "decision.job-offer.decline": "Turn it down",
@@ -188,7 +172,6 @@
   "decision.speak-out.title": "Speak out about what is happening?",
   "decision.speak-out.speak": "Speak out",
   "decision.speak-out.stay-silent": "Keep quiet",
-
   "reason.needs-money": "needs the money",
   "reason.trusts-projects": "believes the projects help",
   "reason.ambitious": "wants to get ahead",
@@ -210,7 +193,6 @@
   "reason.nudged": "your whisper",
   "reason.refused-nudge": "ignored your whisper",
   "reason.died": "died before deciding",
-
   "feed.decided.job-offer.accept": "{name} in {region} took a job at the construction site.",
   "feed.decided.job-offer.decline": "{name} in {region} turned down work at the construction site.",
   "feed.decided.relocation.accept": "{name} accepted the relocation and now lives in {region}.",
@@ -227,7 +209,6 @@
   "feed.job": "{name} in {region} found work.",
   "feed.job-lost": "{name} in {region} lost their job.",
   "feed.moved": "{name} moved to {region}.",
-
   "thought.displaced": "Our land is gone. The compensation sits in the bank, but I don't know what to do with my hands.",
   "thought.widowed": "I still set out two cups in the morning. The house is so quiet now.",
   "thought.child-born": "The baby finally slept through the night. Everything costs more now, and I don't mind.",
@@ -236,14 +217,12 @@
   "thought.married": "We're married now. Two families at one table; we'll learn each other's habits.",
   "thought.moved": "New street, new neighbours, and I still take the wrong turn to the shop. Maybe one day it will feel like home.",
   "thought.retired": "No alarm clock anymore. I thought I would enjoy it more than I do.",
-
   "thought.decide.job-offer": "They're hiring at the construction site. The money is good, but the work is hard and the dust never settles.",
   "thought.decide.relocation": "They say the new flats have running water and heating. But my parents are buried on this land.",
   "thought.decide.protest": "People are meeting in the square on Friday. If I go, will they remember my face? If I don't, will anything change?",
   "thought.decide.emigrate": "My cousin says there's work where he is. Could I really leave everyone behind?",
   "thought.decide.bribe": "He left an envelope on my desk and walked out. Nobody would ever know. I would.",
   "thought.decide.speak-out": "Someone should say out loud what's happening here. Why does it have to be me?",
-
   "thought.pollution.bad": "The dust from the cement works is back. The children cough at night.",
   "thought.land.taken": "Another family on our road signed the land papers this week. Who's next?",
   "thought.danger": "I don't walk home after dark anymore. Too many stories lately.",
@@ -253,7 +232,6 @@
   "thought.china.wary": "The contracts, the engineers, the money all come from far away. What stays here when they're done?",
   "thought.economy.bad": "Prices go up every month and my pay doesn't. Everyone at the market says the same.",
   "thought.sanctions": "The spare parts don't come anymore, and when they do, they cost three times as much.",
-
   "thought.ordinary.child": "If I finish my homework fast, maybe I can play football before dinner.",
   "thought.ordinary.student": "Exams in two weeks. Will a degree even get me a job?",
   "thought.ordinary.homemaker": "Rice, oil, school shoes. The money has to stretch to the end of the month.",
@@ -279,5 +257,13 @@
   "thought.ordinary.customs-officer": "The line of trucks stretches past the hill. Every driver wants to be first.",
   "thought.ordinary.local-official": "The capital wants the project finished before the anniversary. The villagers want answers I don't have.",
   "thought.ordinary.bank-analyst": "The loan numbers look fine on paper. I just wonder who checked the traffic forecasts.",
-  "thought.ordinary.port-manager": "The new berth doubled our capacity. Now I need the ships to actually come."
+  "thought.ordinary.port-manager": "The new berth doubled our capacity. Now I need the ships to actually come.",
+  "ui.continue": "Continue where you left off",
+  "ui.saved": "Saved at {date}",
+  "ui.save-failed": "The game could not be saved in this browser.",
+  "ui.no-save": "There is no saved game yet.",
+  "ui.loading": "Building the world…",
+  "ui.died": "died",
+  "ui.absent": "absent",
+  "worker.failed": "Something went wrong in the simulation. Try reloading the page."
 }

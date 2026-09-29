@@ -111,6 +111,11 @@ export function createWellbeingSystem(
 
   return {
     id: 'wellbeing',
+    prime: (world) => {
+      for (const person of world.people) {
+        if (person.deathWeek === null) person.wellbeing = score(world, person);
+      }
+    },
     step: (world) => {
       const totals = new Map<string, { count: number; sums: Record<keyof Wellbeing, number> }>();
       for (const person of world.people) {
