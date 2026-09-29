@@ -25,11 +25,15 @@ export function createRng(key: RngKey): Rng {
   const base = [key.seed, hashString(key.stream), key.entity, key.tick];
   let counter = 0;
   const next = (): number => hashWords([...base, counter++]);
+  const float = (): number => next() / UINT32_RANGE;
   return {
     next,
-    float: () => next() / UINT32_RANGE,
-    int: () => {
-      throw new Error('not implemented');
+    float,
+    int: (min, maxExclusive) => {
+      if (!Number.isInteger(min) || !Number.isInteger(maxExclusive) || maxExclusive <= min) {
+        throw new RangeError(`invalid integer range [${String(min)}, ${String(maxExclusive)})`);
+      }
+      return min + Math.floor(float() * (maxExclusive - min));
     },
   };
 }
